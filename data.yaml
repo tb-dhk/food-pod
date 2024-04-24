@@ -1,0 +1,10 @@
+
+# Modify these values to match your dataset structure
+train: "images/fast_food/popcorn_chicken/images"  # Path to your training images
+val: "images/fast_food/popcorn_chicken/images"  # Path to your validation images (optional)  # You can comment this out if not using validation
+test: "images/fast_food/popcorn_chicken/images"  # Path to your testing images (optional)  # You can comment this out if not using testing
+nc: 1  # Number of classes (1 for popcorn chicken)
+
+# Other data configuration options (refer to YOLOv8 documentation for details)
+# ...
+
