@@ -30,7 +30,7 @@ for epoch in range(epochs):
     results = model.train(data=data_config, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
     # Get the training loss
-    train_loss = results.metrics['metrics'][0]['total_loss']
+    train_loss = results[0]['total_loss']
 
     # Check if the loss increased by 50%
     if train_loss > prev_loss * threshold_factor:
