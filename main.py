@@ -26,7 +26,7 @@ threshold_factor = 1.5  # 50% increase threshold
 # Training
 for epoch in range(epochs):
     # Train the model for one epoch
-    results = model.train(data=data_config, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
+    results = model.train(data=data_config, epochs=100, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
     # Get the training loss
     train_loss = results.metrics['metrics'][0]['total_loss']
