@@ -19,16 +19,28 @@ learning_rate = 0.001
 # Model loading
 model = YOLO("yolov8s.pt").to(device)  # Replace 'yolov8s.pt' with your pre-trained weights file
 
+# Initialize variables to track loss
+prev_loss = float('inf')  # Initialize with a very large value
+threshold_factor = 1.5  # 50% increase threshold
+
 # Training
-results = model.train(data=data_config, epochs=epochs, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
-# Print training results (optional)
-# print(results)  # Uncomment to print detailed training results
+for epoch in range(epochs):
+    # Train the model for one epoch
+    results = model.train(data=data_config, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
-# Testing (optional)
-# Replace 'path/to/image.jpg' with the path to your test image
-# results = model('path/to/image.jpg')
-# Print inference results (optional)
-# print(results)  # Uncomment to print detailed inference results
+    # Get the training loss
+    train_loss = results.metrics['metrics'][0]['total_loss']
 
-print("Training and Testing Completed!")
+    # Check if the loss increased by 50%
+    if train_loss > prev_loss * threshold_factor:
+        print(f"Training stopped at epoch {epoch + 1} due to loss increase of over 50%.")
+        break
+
+    # Update previous loss for next iteration
+    prev_loss = train_loss
+
+    # Print training progress
+    print(f"Epoch [{epoch + 1}/{epochs}], Loss: {train_loss:.4f}")
+
+print("Training Completed!")
 
