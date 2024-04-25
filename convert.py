@@ -1,10 +1,12 @@
-
 import csv
 import json
 import os
 import sys
 from pathlib import Path
-import shutil
+import imgaug.augmenters as iaa
+import numpy as np
+import imgaug as ia
+from PIL import Image
 
 def find_latest_csv_downloads():
     """
@@ -23,15 +25,15 @@ def find_latest_csv_downloads():
 
 def csv_to_yolo(yolo_dir):
     """
-    Convert a CSV file containing bounding box annotations to YOLO format.
+    Convert a CSV file containing bounding box annotations to YOLO format and apply augmentations.
 
     Args:
         yolo_dir (str): Directory where YOLO files will be saved.
     """
     labels_dir = os.path.join(yolo_dir, "labels")  # Create labels directory
     os.makedirs(labels_dir, exist_ok=True)  # Create directory if it doesn't exist
-    images_dir = os.path.join(yolo_dir, "images")
-    print(os.listdir(images_dir))
+    images_dir = os.path.join(yolo_dir, "images")  # Images directory
+    os.makedirs(images_dir, exist_ok=True)  # Create directory if it doesn't exist
 
     csv_file = find_latest_csv_downloads()
 
@@ -41,6 +43,9 @@ def csv_to_yolo(yolo_dir):
         return
     
     print(f"Processing CSV file: {csv_file}")
+
+    # Dictionary to store bounding box information for each image
+    image_bbox_dict = {}
 
     with open(csv_file, 'r') as file:
         csv_reader = csv.DictReader(file)
@@ -54,43 +59,176 @@ def csv_to_yolo(yolo_dir):
                 region_attributes = json.loads(row['region_attributes'])
 
                 # Get bounding box coordinates
-                x_min = int(region_shape_attributes['x'])
-                y_min = int(region_shape_attributes['y'])
+                x = int(region_shape_attributes['x'])
+                y = int(region_shape_attributes['y'])
                 width = int(region_shape_attributes['width'])
                 height = int(region_shape_attributes['height'])
-                x_max = x_min + width
-                y_max = y_min + height
+                x_max = x + width
+                y_max = y + height
 
-                # Normalize coordinates
-                img_width = int(row['file_size'])
-                img_height = int(row['file_size'])
-                x_center = (x_min + x_max) / (2.0 * img_width)
-                y_center = (y_min + y_max) / (2.0 * img_height)
-                box_width = width / img_width
-                box_height = height / img_height
-
-                # Check if 'class_id' exists in region_attributes
-                if 'class_id' in region_attributes:
-                    class_id = region_attributes['class_id']
-                else:
-                    # If 'class_id' is missing, skip this row or assign a default value
-                    print(f"Warning: 'class_id' not found for row '{row}'")
-                    continue
-
-                # Write YOLO format data to file
-                yolo_filename = os.path.join(labels_dir, os.path.splitext(filename)[0] + ".txt")
-                with open(yolo_filename, 'a') as yolo_file:
-                    yolo_file.write(f"{class_id} {x_center} {y_center} {box_width} {box_height}\n")
-
-                # Copy image to the images directory
-                image_path = os.path.join(images_dir, filename)
-                if not os.path.isfile(image_path):
-                    print(f"Error: Image '{filename}' not found in '{images_dir}'.")
+                # Add bounding box information to dictionary
+                if filename not in image_bbox_dict:
+                    image_bbox_dict[filename] = []
+                image_bbox_dict[filename].append((x, y, x_max, y_max, region_attributes['class_id']))
             except json.JSONDecodeError:
                 print(f"Warning: Unable to parse JSON in row '{row}'")
                 continue
 
-    print("\n\nConversion completed.\n\n")
+    # Iterate through images and augmentations
+    for filename, bounding_boxes in image_bbox_dict.items():
+        # Load the image
+        image_path = os.path.join(images_dir, filename)
+        image = Image.open(image_path)
+
+        # Apply augmentations
+        augmentation_types = ["rotation", "scaling"]  # Add more augmentations here...
+        for idx, aug_type in enumerate(augmentation_types):
+            augmented_image, augmented_bounding_boxes = apply_augmentation(image, bounding_boxes, aug_type)
+
+            # Save augmented image
+            aug_image_filename = f"{os.path.splitext(filename)[0]}-aug{idx}.jpg"
+            aug_image_path = os.path.join(images_dir, aug_image_filename)
+            augmented_image.save(aug_image_path)
+
+            # Save corresponding text file with YOLO format
+            yolo_filename = os.path.join(labels_dir, os.path.splitext(filename)[0] + f"-aug{idx}.txt")
+            with open(yolo_filename, 'w') as yolo_file:
+                for box in augmented_bounding_boxes:
+                    x_center = (box[0] + box[2]) / (2.0 * image.width)
+                    y_center = (box[1] + box[3]) / (2.0 * image.height)
+                    box_width = (box[2] - box[0]) / image.width
+                    box_height = (box[3] - box[1]) / image.height
+                    class_id = box[4]
+                    yolo_file.write(f"{class_id} {x_center} {y_center} {box_width} {box_height}\n")
+
+    print("\n\nConversion and augmentation completed.\n\n")
+
+def apply_augmentation(image, bounding_boxes, augmentation_name):
+    """
+    Apply the specified augmentation to the image and bounding boxes.
+
+    Args:
+        image (numpy.ndarray): The input image.
+        bounding_boxes (list of tuples): List of bounding boxes in the format [(x_min, y_min, x_max, y_max), ...].
+        augmentation_name (str): Name of the augmentation to apply.
+
+    Returns:
+        numpy.ndarray: The augmented image.
+        list of tuples: List of augmented bounding boxes.
+    """
+
+    image_np = np.array(image)
+
+    # Define augmentation functions for each category
+    geometric_transforms = {
+        "rotation": iaa.Affine(rotate=(-45, 45)),
+        "scaling": iaa.Affine(scale={"x": (0.5, 1.5), "y": (0.5, 1.5)}),
+        "translation": iaa.Affine(translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)}),
+        "shearing": iaa.Affine(shear=(-20, 20)),
+        "perspective_transformations": iaa.PerspectiveTransform(scale=(0.01, 0.15)),
+        "cropping_and_padding": iaa.CropAndPad(percent=(-0.1, 0.1))
+    }
+
+    flipping = {
+        "horizontal_flip": iaa.Fliplr(1.0),
+        "vertical_flip": iaa.Flipud(1.0)
+    }
+
+    color_space_manipulation = {
+        "brightness_adjustment": iaa.MultiplyBrightness((0.5, 1.5)),
+        "contrast_adjustment": iaa.GammaContrast((0.5, 2.0)),
+        "saturation_adjustment": iaa.MultiplySaturation((0.5, 1.5)),
+        "hue_adjustment": iaa.MultiplyHue((0.5, 1.5)),
+        "color_channel_shifting": iaa.ChannelShuffle(p=1.0),
+        "gamma_correction": iaa.GammaContrast((0.5, 2.0))
+    }
+
+    noise_injection = {
+        "gaussian_noise": iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.1*255)),
+        "salt_and_pepper_noise": iaa.SaltAndPepper(0.05),
+        "speckle_noise": iaa.Salt(0.05)
+        # Add more noise injections as needed
+    }
+
+    blur_and_sharpen = {
+        "gaussian_blur": iaa.GaussianBlur(sigma=(0.0, 3.0)),
+        "average_blur": iaa.AverageBlur(k=(2, 7)),
+        "median_blur": iaa.MedianBlur(k=(3, 11)),
+        "bilateral_blur": iaa.BilateralBlur(d=(3, 10)),
+        "sharpening": iaa.Sharpen(alpha=(0.0, 1.0), lightness=(0.75, 2.0))
+    }
+
+    distortion = {
+        "elastic_deformations": iaa.ElasticTransformation(alpha=(0.5, 3.5), sigma=0.25),
+        "piecewise_affine_transformations": iaa.PiecewiseAffine(scale=(0.01, 0.05)),
+        "perspective_warping": iaa.PerspectiveTransform(scale=(0.01, 0.15))
+    }
+
+    augmenters_combining_multiple_techniques = {
+        "sequential_augmentation": iaa.Sequential([
+            iaa.Affine(rotate=(-45, 45)),
+            iaa.Fliplr(0.5),
+            iaa.MultiplyBrightness((0.5, 1.5))
+        ]),
+        "someof_augmentation": iaa.SomeOf(2, [
+            iaa.Affine(rotate=(-45, 45)),
+            iaa.Fliplr(0.5),
+            iaa.MultiplyBrightness((0.5, 1.5))
+        ]),
+        "oneof_augmentation": iaa.OneOf([
+            iaa.Affine(rotate=(-45, 45)),
+            iaa.Fliplr(0.5),
+            iaa.MultiplyBrightness((0.5, 1.5))
+        ])
+    }
+
+    # Combine all dictionaries into one
+    all_augmentations = {
+        **geometric_transforms, 
+        **flipping, 
+        **color_space_manipulation,
+        **noise_injection, 
+        **blur_and_sharpen, 
+        **distortion,
+        **augmenters_combining_multiple_techniques, 
+    }
+
+    # Check if the provided augmentation name is valid
+    if augmentation_name not in all_augmentations:
+        print("Invalid augmentation name. Available augmentations:")
+        print(list(all_augmentations.keys()))
+        return None, None
+
+    # Apply the selected augmentation to the image
+    aug_function = all_augmentations[augmentation_name]
+    augmented_image = aug_function(image=image_np)
+
+    augmented_image_pil = Image.fromarray(augmented_image)
+
+    # Convert bounding boxes to imgaug format (BoundingBoxesOnImage)
+    bb_list = []
+    for box in bounding_boxes:
+        bb_list.append(ia.BoundingBox(x1=box[0], y1=box[1], x2=box[2], y2=box[3]))
+    bbs = ia.BoundingBoxesOnImage(bb_list, shape=image.shape)
+
+    # Apply the augmentation to the bounding boxes
+    bbs_aug = aug_function(bounding_boxes=bbs)
+
+    # Convert the augmented bounding boxes back to the original format
+    augmented_bounding_boxes = []
+    for bb in bbs_aug.bounding_boxes:
+        augmented_bounding_boxes.append((bb.x1, bb.y1, bb.x2, bb.y2))
+
+    return augmented_image_pil, augmented_bounding_boxes
+
+# Print a list of all available augmentations
+def all_augmentations():
+    return (
+        list(iaa.geometric_transforms.keys()) + list(iaa.flipping.keys()) + list(iaa.color_space_manipulation.keys()) + \
+        list(iaa.noise_injection.keys()) + list(iaa.blur_and_sharpen.keys()) + list(iaa.distortion.keys()) + \
+        list(iaa.augmenters_combining_multiple_techniques.keys()) + list(iaa.custom_augmenters.keys())
+    )
+
 
 if __name__ == "__main__":
     # Check if the correct number of arguments are provided

@@ -1,0 +1,3 @@
+torch
+torchvision  # This is likely also needed for YOLOv8
+yolov8
