@@ -185,10 +185,9 @@ def csv_to_yolo(yolo_dir):
 
     print("\n\nConversion and augmentation completed.\n\n")
 
-
 def apply_augmentation(image, bounding_boxes, augmentation_name):
     """
-    Apply the specified augmentation to the image and bounding boxes.
+    Apply the specified augmentation to the image within the bounding boxes.
 
     Args:
         image (PIL.Image): The input image.
@@ -197,7 +196,6 @@ def apply_augmentation(image, bounding_boxes, augmentation_name):
 
     Returns:
         numpy.ndarray: The augmented image.
-        list of tuples: List of augmented bounding boxes.
     """ 
     # Convert PIL image to numpy array
     image_np = np.array(image)
@@ -208,21 +206,24 @@ def apply_augmentation(image, bounding_boxes, augmentation_name):
         print(list(all_augmentations.keys()))
         return None 
 
-    # Apply the selected augmentation to the image
+    # Define the augmentation function
     aug_function = all_augmentations[augmentation_name]
-    augmented_image_np = aug_function(image=image_np)
-
-    # Convert augmented image back to PIL format
-    augmented_image_pil = Image.fromarray(augmented_image_np)
 
     # Convert bounding boxes to imgaug format (BoundingBoxesOnImage)
     bb_list = [ia.BoundingBox(x1=bb[0], y1=bb[1], x2=bb[2], y2=bb[3]) for bb in bounding_boxes]
-    bbs = ia.BoundingBoxesOnImage(bb_list, shape=image_np.shape)
+    bbs_aug = ia.BoundingBoxesOnImage(bb_list, shape=image_np.shape)
 
-    # Apply the augmentation to the bounding boxes
-    bbs_aug = aug_function(bounding_boxes=bbs)
+    # Apply the augmentation to each bounding box individually
+    for bb_aug in bbs_aug:
+        # Apply the selected augmentation to the image within the bounding box
+        augmented_image_np = aug_function(image=image_np[bb_aug.y1_int:bb_aug.y2_int, bb_aug.x1_int:bb_aug.x2_int])
+        # Overlay the augmented region onto the original image
+        image_np[bb_aug.y1_int:bb_aug.y2_int, bb_aug.x1_int:bb_aug.x2_int] = augmented_image_np
 
-    return augmented_image_pil 
+    # Convert the modified image back to PIL format
+    augmented_image_pil = Image.fromarray(image_np)
+
+    return augmented_image_pil
 
 if __name__ == "__main__":
     # Check if the correct number of arguments are provided
