@@ -8,21 +8,6 @@ import numpy as np
 import imgaug as ia
 from PIL import Image
 
-def find_latest_csv_downloads():
-    """
-    Find the latest modified CSV file in the ~/Downloads directory.
-
-    Returns:
-        str: Path to the latest modified CSV file.
-    """
-    downloads_dir = Path.home() / "Downloads"
-    csv_files = list(downloads_dir.glob("*.csv"))
-    if not csv_files:
-        print("Error: No CSV files found in ~/Downloads directory.")
-        sys.exit(1)
-    latest_csv_file = max(csv_files, key=os.path.getmtime)
-    return str(latest_csv_file)
-
 # Define augmentation functions for each category
 geometric_transforms = {
     "rotation": ia.augmenters.Affine(rotate=(-45, 45)),
@@ -42,8 +27,6 @@ color_space_manipulation = {
     "brightness_adjustment": ia.augmenters.MultiplyBrightness((0.5, 1.5)),
     "contrast_adjustment": ia.augmenters.GammaContrast((0.5, 2.0)),
     "saturation_adjustment": ia.augmenters.MultiplySaturation((0.5, 1.5)),
-    "hue_adjustment": ia.augmenters.MultiplyHue((0.5, 1.5)),
-    "color_channel_shifting": ia.augmenters.ChannelShuffle(p=1.0),
     "gamma_correction": ia.augmenters.GammaContrast((0.5, 2.0))
 }
 
@@ -104,45 +87,48 @@ def csv_to_yolo(yolo_dir):
     images_dir = os.path.join(yolo_dir, "images")  # Images directory
     os.makedirs(images_dir, exist_ok=True)  # Create directory if it doesn't exist
 
-    csv_file = find_latest_csv_downloads()
+    csv_files = os.listdir(os.path.join(yolo_dir, "boxes"))
 
-    # Check if the CSV file exists
-    if not os.path.isfile(csv_file):
-        print(f"Error: File '{csv_file}' not found.")
-        return
-    
-    print(f"Processing CSV file: {csv_file}")
+    for csv_file in csv_files:
+        csv_file = os.path.join(yolo_dir, "boxes", csv_file)
 
-    # Dictionary to store bounding box information for each image
-    image_bbox_dict = {}
+        # Check if the CSV file exists
+        if not os.path.isfile(csv_file):
+            print(f"Error: File '{csv_file}' not found.")
+            return
+        
+        print(f"Processing CSV file: {csv_file}")
 
-    with open(csv_file, 'r') as file:
-        csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            try:
-                # Get the filename
-                filename = row['filename']
-                
-                # Parse region_shape_attributes and region_attributes as dictionaries
-                region_shape_attributes = json.loads(row['region_shape_attributes'])
-                region_attributes = json.loads(row['region_attributes'])
+        # Dictionary to store bounding box information for each image
+        image_bbox_dict = {}
 
-                # Get bounding box coordinates
-                x = int(region_shape_attributes['x'])
-                y = int(region_shape_attributes['y'])
-                width = int(region_shape_attributes['width'])
-                height = int(region_shape_attributes['height'])
-                x_max = x + width
-                y_max = y + height
+        with open(csv_file, 'r') as file:
+            csv_reader = csv.DictReader(file)
+            for row in csv_reader:
+                try:
+                    # Get the filename
+                    filename = row['filename']
+                    
+                    # Parse region_shape_attributes and region_attributes as dictionaries
+                    region_shape_attributes = json.loads(row['region_shape_attributes'])
+                    region_attributes = json.loads(row['region_attributes'])
 
-                # Add bounding box information to dictionary
-                if filename not in image_bbox_dict:
-                    image_bbox_dict[filename] = []
-                image_bbox_dict[filename].append((x, y, x_max, y_max, region_attributes['class_id']))
-            except json.JSONDecodeError:
-                print(f"Warning: Unable to parse JSON in row '{row}'")
-                continue
-        print("csv file processed")
+                    # Get bounding box coordinates
+                    x = int(region_shape_attributes['x'])
+                    y = int(region_shape_attributes['y'])
+                    width = int(region_shape_attributes['width'])
+                    height = int(region_shape_attributes['height'])
+                    x_max = x + width
+                    y_max = y + height
+
+                    # Add bounding box information to dictionary
+                    if filename not in image_bbox_dict:
+                        image_bbox_dict[filename] = []
+                    image_bbox_dict[filename].append((x, y, x_max, y_max, region_attributes['class_id']))
+                except json.JSONDecodeError:
+                    print(f"Warning: Unable to parse JSON in row '{row}'")
+                    continue
+            print("csv file processed")
 
     # Clear out existing augmented images
     for filename in os.listdir(images_dir):
@@ -227,7 +213,7 @@ def apply_augmentation(image, bounding_boxes, augmentation_name):
 
 if __name__ == "__main__":
     # Check if the correct number of arguments are provided
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print("Usage: python script_name.py yolo_dir")
         sys.exit(1)
 
@@ -236,5 +222,6 @@ if __name__ == "__main__":
 
     # Call the function to convert CSV to YOLO format
     csv_to_yolo(yolo_dir)
+
 
 
