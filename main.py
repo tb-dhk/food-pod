@@ -27,6 +27,7 @@ if len(image_files) < 3 or len(label_files) < 3:
 
 # Split the dataset into train/validation/test sets
 train_images, test_val_images, train_labels, test_val_labels = train_test_split(image_files, label_files, test_size=0.2, random_state=42)
+print(image_files, label_files)
 test_images, val_images, test_labels, val_labels = train_test_split(test_val_images, test_val_labels, test_size=0.5, random_state=42)
 
 # Model loading
