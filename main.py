@@ -17,11 +17,17 @@ epochs = 100
 batch_size = 8
 learning_rate = 0.001
 
-# Split the dataset into train/validation/test sets
+# Load image and label files
 image_files = sorted(image_dir.glob("*.jpg"))
 label_files = sorted(label_dir.glob("*.txt"))
-train_images, test_images, train_labels, test_labels = train_test_split(image_files, label_files, test_size=0.2, random_state=42)
-train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=0.25, random_state=42)
+
+# Check if there are enough samples for splitting
+if len(image_files) < 3 or len(label_files) < 3:
+    raise ValueError("Insufficient data for splitting. Please ensure there are at least three samples.")
+
+# Split the dataset into train/validation/test sets
+train_images, test_val_images, train_labels, test_val_labels = train_test_split(image_files, label_files, test_size=0.2, random_state=42)
+test_images, val_images, test_labels, val_labels = train_test_split(test_val_images, test_val_labels, test_size=0.5, random_state=42)
 
 # Model loading
 model = YOLO("yolov8s.pt").to(device)  # Replace 'yolov8s.pt' with your pre-trained weights file
