@@ -6,8 +6,8 @@ from sklearn.model_selection import train_test_split
 # Define data paths (modify these)
 data_dir = Path("data")
 data_config = data_dir / "data.yaml"  # Assuming your data configuration file (YAML) is here
-image_dir = data_dir / "images" / "fast_food" / "popcorn_chicken" / "images"
-label_dir = data_dir / "images" / "fast_food" / "popcorn_chicken" / "labels"
+image_dir = Path("datasets") / "data" / "images" / "fast_food" / "popcorn_chicken" / "images"
+label_dir = Path("datasets") / "data" / "images" / "fast_food" / "popcorn_chicken" / "labels"
 
 # Device configuration (CPU or GPU)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
