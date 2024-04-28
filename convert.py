@@ -135,10 +135,9 @@ def csv_to_yolo(yolo_dir):
         if "-aug" in filename:
             os.remove(os.path.join(images_dir, filename))
 
-    # Clear out existing augmented YOLO files
+    # Clear out existing files
     for filename in os.listdir(labels_dir):
-        if "-aug" in filename:
-            os.remove(os.path.join(labels_dir, filename))
+        os.remove(os.path.join(labels_dir, filename))
 
     # Iterate through images and augmentations
     for filename, bounding_boxes in image_bbox_dict.items():
@@ -146,6 +145,16 @@ def csv_to_yolo(yolo_dir):
         # Load the image
         image_path = os.path.join(images_dir, filename)
         image = Image.open(image_path)
+
+        yolo_filename = os.path.join(labels_dir, f"{os.path.splitext(filename)[0]}.txt")
+        with open(yolo_filename, 'w') as yolo_file:
+            for box in bounding_boxes:
+                x_center = (box[0] + box[2]) / (2.0 * image.width)
+                y_center = (box[1] + box[3]) / (2.0 * image.height)
+                box_width = (box[2] - box[0]) / image.width
+                box_height = (box[3] - box[1]) / image.height
+                class_id = box[4]
+                yolo_file.write(f"{class_id} {x_center} {y_center} {box_width} {box_height}\n")
 
         # Apply augmentations
         augmentation_types = all_augmentations  # Add more augmentations here...

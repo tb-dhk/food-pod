@@ -18,8 +18,8 @@ batch_size = 8
 learning_rate = 0.001
 
 # Load image and label files
-image_files = sorted(image_dir.glob("*.jpg"))
-label_files = sorted(label_dir.glob("*.txt"))
+image_files = sorted([str(x) for x in image_dir.glob("*.jpg")])
+label_files = sorted([str(x) for x in label_dir.glob("*.txt")])
 
 # Check if there are enough samples for splitting
 if len(image_files) < 3 or len(label_files) < 3:
@@ -27,7 +27,6 @@ if len(image_files) < 3 or len(label_files) < 3:
 
 # Split the dataset into train/validation/test sets
 train_images, test_val_images, train_labels, test_val_labels = train_test_split(image_files, label_files, test_size=0.2, random_state=42)
-print(image_files, label_files)
 test_images, val_images, test_labels, val_labels = train_test_split(test_val_images, test_val_labels, test_size=0.5, random_state=42)
 
 # Model loading
@@ -38,7 +37,7 @@ prev_loss = float('inf')  # Initialize with a very large value
 threshold_factor = 1.5  # 50% increase threshold
 
 # Training
-train_results = model.train(data=data_config, epochs=epochs, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=train_images, label_path=train_labels)
+train_results = model.train(data=data_config, epochs=epochs, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 val_results = model.train(data=data_config, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=val_images, label_path=val_labels, single_cls=True)
 
 print("Training and Validation Completed!")
