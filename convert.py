@@ -75,6 +75,8 @@ all_augmentations = {**geometric_transforms, **flipping, **color_space_manipulat
 
 augmentations_list = all_augmentations.keys()
 
+image_bbox_dict = {}
+
 def csv_to_yolo(yolo_dir):
     """
     Convert a CSV file containing bounding box annotations to YOLO format and apply augmentations.
@@ -100,8 +102,6 @@ def csv_to_yolo(yolo_dir):
         print(f"Processing CSV file: {csv_file}")
 
         # Dictionary to store bounding box information for each image
-        image_bbox_dict = {}
-
         with open(csv_file, 'r') as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
