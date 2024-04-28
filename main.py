@@ -24,7 +24,7 @@ prev_loss = float('inf')  # Initialize with a very large value
 threshold_factor = 1.5  # 50% increase threshold
 
 # Training
-results = model.train(data=data_config, epochs=70, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
+results = model.train(data=data_config, epochs=100, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
 print("Training Completed!")
 
