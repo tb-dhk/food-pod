@@ -1,3 +1,4 @@
+
 import os
 import shutil
 import random
@@ -28,23 +29,44 @@ def redistribute_tvt(directory, train_ratio, val_ratio):
     train_count = int(train_ratio * total_files)
     val_count = int(val_ratio * total_files)
 
-    # Move files to train directory
+    # Move image files and corresponding label files to train directory
     for file in all_files[:train_count]:
-        dst = os.path.join(train_dir, os.path.basename(file))
-        shutil.move(file, dst)
+        dst_img = os.path.join(train_dir, os.path.basename(file))
+        shutil.move(file, dst_img)
+        move_corresponding_label(file, train_dir, directory)
+        print(f"Moved {file} to {train_dir}")
 
-    # Move files to val directory
+    # Move image files and corresponding label files to val directory
     for file in all_files[train_count:train_count+val_count]:
-        dst = os.path.join(val_dir, os.path.basename(file))
-        shutil.move(file, dst)
+        dst_img = os.path.join(val_dir, os.path.basename(file))
+        shutil.move(file, dst_img)
+        move_corresponding_label(file, val_dir, directory)
+        print(f"Moved {file} to {val_dir}")
 
-    # Move files to test directory
+    # Move image files and corresponding label files to test directory
     for file in all_files[train_count+val_count:]:
-        dst = os.path.join(test_dir, os.path.basename(file))
-        shutil.move(file, dst)
+        dst_img = os.path.join(test_dir, os.path.basename(file))
+        shutil.move(file, dst_img)
+        move_corresponding_label(file, test_dir, directory)
+        print(f"Moved {file} to {test_dir}")
 
     print("Redistribution complete.")
 
+def move_corresponding_label(image_file, dest_dir, root_directory):
+    # Extract the file name without extension
+    filename = os.path.splitext(os.path.basename(image_file))[0]
+    
+    # Find the corresponding label file in labels directory
+    labels_dir = root_directory.replace("images", "labels") 
+    for subdir, _, files in os.walk(labels_dir):
+        for file in files:
+            if file.startswith(filename) and file.endswith('.txt'):
+                src_label = os.path.join(subdir, file)
+                dst_label = os.path.join(dest_dir.replace("images", "labels"), file)
+                shutil.move(src_label, dst_label)
+                print(f"Moved {src_label} to {dst_label} (label)")
+                return
+
 # Example usage:
-# redistribute_ttv('./datasets/data/images/fast_food/popcorn_chicken/', 0.6, 0.2, 0.2)
+# redistribute_ttv('./datasets/data/images/fast_food/popcorn_chicken/', 0.6, 0.2)
 
