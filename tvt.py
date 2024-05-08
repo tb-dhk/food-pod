@@ -31,19 +31,16 @@ def redistribute_tvt(directory, train_ratio, val_ratio):
     # Move files to train directory
     for file in all_files[:train_count]:
         dst = os.path.join(train_dir, os.path.basename(file))
-        print("moved file", file, "to", dst)
         shutil.move(file, dst)
 
     # Move files to val directory
     for file in all_files[train_count:train_count+val_count]:
         dst = os.path.join(val_dir, os.path.basename(file))
-        print("moved file", file, "to", dst)
         shutil.move(file, dst)
 
     # Move files to test directory
     for file in all_files[train_count+val_count:]:
         dst = os.path.join(test_dir, os.path.basename(file))
-        print("moved file", file, "to", dst)
         shutil.move(file, dst)
 
     print("Redistribution complete.")
