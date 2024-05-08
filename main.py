@@ -3,9 +3,9 @@ from pathlib import Path
 import torch
 from ultralytics import YOLO
 
-from ttv import redistribute_ttv
+from tvt import redistribute_tvt
 
-redistribute_ttv("./datasets/data/images/fast_food/popcorn_chicken/", 6, 3, 1)
+redistribute_tvt("./datasets/data/images/fast_food/popcorn_chicken/", 6, 3, 1)
 
 # Define data paths (modify these)
 data_dir = Path("data")
