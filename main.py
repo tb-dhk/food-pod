@@ -5,7 +5,7 @@ from ultralytics import YOLO
 
 from tvt import redistribute_tvt
 
-redistribute_tvt("./datasets/data/images/fast_food/popcorn_chicken/", 6, 3, 1)
+redistribute_tvt("./datasets/data/images/fast_food/popcorn_chicken/", 0.6, 0.3)
 
 # Define data paths (modify these)
 data_dir = Path("data")

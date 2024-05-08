@@ -2,7 +2,7 @@ import os
 import shutil
 import random
 
-def redistribute_tvt(directory, train_ratio, val_ratio, test_ratio):
+def redistribute_tvt(directory, train_ratio, val_ratio):
     # Check if train, val, and test directories exist. If not, create them.
     train_dir = os.path.join(directory, 'train')
     val_dir = os.path.join(directory, 'val')
@@ -27,7 +27,6 @@ def redistribute_tvt(directory, train_ratio, val_ratio, test_ratio):
     total_files = len(all_files)
     train_count = int(train_ratio * total_files)
     val_count = int(val_ratio * total_files)
-    test_count = total_files - train_count - val_count
 
     # Move files to train directory
     for file in all_files[:train_count]:
