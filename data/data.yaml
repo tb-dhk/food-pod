@@ -1,6 +1,6 @@
 
-train: "images/fast_food/popcorn_chicken/images/train"  # Path to your training image directory
-val: "images/fast_food/popcorn_chicken/images/val"  # Path to your validation image directory (optional)
-test: "images/fast_food/popcorn_chicken/images/test"  # Path to your testing image directory (optional)
+train: "images/fast_food/popcorn_chicken/train"  # Path to your training image directory
+val: "images/fast_food/popcorn_chicken/val"  # Path to your validation image directory (optional)
+test: "images/fast_food/popcorn_chicken/test"  # Path to your testing image directory (optional)
 nc: 1  # Number of classes (1 for popcorn chicken)
 
