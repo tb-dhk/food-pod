@@ -45,6 +45,3 @@ def redistribute_ttv(directory, train_ratio, test_ratio, val_ratio):
 
     print("Redistribution complete.")
 
-# Example usage:
-# redistribute_ttv('/path/to/directory', 0.7, 0.2, 0.1)
-

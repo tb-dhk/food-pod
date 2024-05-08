@@ -35,14 +35,13 @@ model = YOLO("yolov8s.pt").to(device)  # Replace 'yolov8s.pt' with your pre-trai
 prev_loss = float('inf')  # Initialize with a very large value
 threshold_factor = 1.5  # 50% increase threshold
 
-# Training and Validation
 for epoch in range(epochs):
     # Training
-    train_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=train_dir, label_path=train_dir, single_cls=True)
-    
+    train_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
+
     # Validation
     if (epoch + 1) % validation_interval == 0:
-        val_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=val_dir, label_path=val_dir, single_cls=True)
+        val_results = model.val(data=data_config_path, imgsz=640, batch=batch_size, device=device, single_cls=True)
 
         # Print validation results or perform other validation-related tasks
 
