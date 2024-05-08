@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 import torch
+from ultralytics import YOLO
 
 from ttv import redistribute_ttv
 
@@ -35,17 +36,6 @@ prev_loss = float('inf')  # Initialize with a very large value
 threshold_factor = 1.5  # 50% increase threshold
 
 # Training and Validation
-for epoch in range(epochs):
-    # Training
-    train_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=train_dir, label_path=train_dir, single_cls=True)
-    
-    # Validation
-    if (epoch + 1) % validation_interval == 0:
-        val_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=val_dir, label_path=val_dir, single_cls=True)
-
-        # Print validation results or perform other validation-related tasks
-
-print("Training and Validation Completed!")
 for epoch in range(epochs):
     # Training
     train_results = model.train(data=data_config_path, epochs=1, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, train_path=train_dir, label_path=train_dir, single_cls=True)
