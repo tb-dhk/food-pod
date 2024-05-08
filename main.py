@@ -15,8 +15,8 @@ with open(data_config_path, 'r') as file:
     data_config = yaml.safe_load(file)
 
 # Extract train/val directories from data configuration
-train_dir = Path(data_config['train_dir'])
-val_dir = Path(data_config['val_dir'])
+train_dir = Path(data_config['train'])
+val_dir = Path(data_config['val'])
 
 # Device configuration (CPU or GPU)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
