@@ -34,21 +34,18 @@ def redistribute_tvt(directory, train_ratio, val_ratio):
         dst_img = os.path.join(train_dir, os.path.basename(file))
         shutil.move(file, dst_img)
         move_corresponding_label(file, train_dir, directory)
-        print(f"Moved {file} to {train_dir}")
 
     # Move image files and corresponding label files to val directory
     for file in all_files[train_count:train_count+val_count]:
         dst_img = os.path.join(val_dir, os.path.basename(file))
         shutil.move(file, dst_img)
         move_corresponding_label(file, val_dir, directory)
-        print(f"Moved {file} to {val_dir}")
 
     # Move image files and corresponding label files to test directory
     for file in all_files[train_count+val_count:]:
         dst_img = os.path.join(test_dir, os.path.basename(file))
         shutil.move(file, dst_img)
         move_corresponding_label(file, test_dir, directory)
-        print(f"Moved {file} to {test_dir}")
 
     print("Redistribution complete.")
 
