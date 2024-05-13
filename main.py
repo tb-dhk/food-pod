@@ -51,8 +51,7 @@ for epoch in range(epochs // 5):
 
     train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
-    current_loss = utils.loss.BboxLoss(train_results)
-    model.val()
+    current_loss = float(utils.loss.BboxLoss(train_results))
 
     # Update best model if current validation loss is lower
     if current_loss < best_loss:
