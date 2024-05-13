@@ -1,7 +1,7 @@
 import yaml
 from pathlib import Path
 import torch
-from ultralytics import YOLO
+from ultralytics import YOLO, utils
 
 from tvt import redistribute_tvt
 
@@ -51,8 +51,7 @@ for epoch in range(epochs // 5):
 
     train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
-    current_loss = train_results.results_dict  # Access validation loss directly from val_results
-    print(current_loss)
+    current_loss = utils.loss.BboxLoss(train_results)
     model.val()
 
     # Update best model if current validation loss is lower
