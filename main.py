@@ -35,10 +35,10 @@ best_model_state_dict = None
 prev_loss = float('inf')  
 
 for epoch in range(epochs // 5):
-    print("epoch", epoch * 5, "to", epoch * 5 + 4)
+    #print("epoch", epoch * 5, "to", epoch * 5 + 4)
 
     checkpoint_path = f"checkpoint_epoch_{epoch}.pt"
-    if Path(checkpoint_path).is_file() and epoch:
+    if Path(checkpoint_path).is_file() and epoch and False: # loop closed
         checkpoint = torch.load(checkpoint_path)
         try:
             model.load_state_dict(checkpoint['model_state_dict'])
@@ -49,14 +49,16 @@ for epoch in range(epochs // 5):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         print(f"Loaded checkpoint from epoch {epoch}")
 
-    train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
+    #train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
     checkpoint = {
         'model_state_dict': best_model_state_dict,  # Use best model state
         'optimizer_state_dict': optimizer.state_dict(),
         'learning_rate': learning_rate,
     }
-    torch.save(checkpoint, checkpoint_path)
+    # torch.save(checkpoint, checkpoint_path)
+
+train_results = model.train(data=data_config_path, epochs=100, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
 print("Training and Validation Completed!" if prev_loss is None else "Training stopped due to loss increase.")
 
