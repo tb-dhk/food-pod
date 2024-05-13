@@ -43,7 +43,7 @@ for epoch in range(epochs // 5):
     try:
         model.load_state_dict(checkpoint['model_state_dict'])
     except:
-        pass
+        print("model loading error.")
     prev_loss = checkpoint['loss']  # Update prev_loss from checkpoint if available
     learning_rate = checkpoint['learning_rate']
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
