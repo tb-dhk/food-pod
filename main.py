@@ -3,9 +3,9 @@ from pathlib import Path
 import torch
 from ultralytics import YOLO, utils
 
-from tvt import redistribute_tvt
+from tt import redistribute_tt
 
-redistribute_tvt("./datasets/data/fast_food/popcorn_chicken/images", 0.6, 0.3)
+redistribute_tt("./datasets/data/fast_food/popcorn_chicken/images", 0.8)
 
 data_dir = Path("data")
 data_config_path = data_dir / "data.yaml"
@@ -58,7 +58,7 @@ for epoch in range(epochs // 5):
     }
     # torch.save(checkpoint, checkpoint_path)
 
-train_results = model.train(data=data_config_path, epochs=100, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
+train_results = model.train(data=data_config_path, epochs=100, patience=5, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
 print("Training and Validation Completed!" if prev_loss is None else "Training stopped due to loss increase.")
 
