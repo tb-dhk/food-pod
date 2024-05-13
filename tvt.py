@@ -61,7 +61,6 @@ def move_corresponding_label(image_file, dest_dir, root_directory):
                 src_label = os.path.join(subdir, file)
                 dst_label = os.path.join(dest_dir.replace("images", "labels"), file)
                 shutil.move(src_label, dst_label)
-                print(f"Moved {src_label} to {dst_label} (label)")
                 return
 
 # Example usage:
