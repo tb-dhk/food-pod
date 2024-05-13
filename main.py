@@ -75,4 +75,3 @@ for epoch in range(epochs // 5):
   prev_loss = current_loss  # Update previous loss
 
 print("Training and Validation Completed!" if prev_loss is None else "Training stopped due to loss increase.")
-
