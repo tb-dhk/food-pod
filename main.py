@@ -37,11 +37,13 @@ prev_loss = float('inf')
 for epoch in range(epochs // 5):
   print("epoch", epoch * 5, "to", epoch * 5 + 4)
 
-
   checkpoint_path = f"checkpoint_epoch_{epoch}.pt"
   if Path(checkpoint_path).is_file():
     checkpoint = torch.load(checkpoint_path)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    try:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    except:
+        pass
     prev_loss = checkpoint['loss']  # Update prev_loss from checkpoint if available
     learning_rate = checkpoint['learning_rate']
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
