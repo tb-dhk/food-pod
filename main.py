@@ -51,30 +51,12 @@ for epoch in range(epochs // 5):
 
     train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
-    results = model.val()
-
-    current_loss = (results["val/box_loss"] + results["val/cls_loss"]) / 2
-
-    # Update best model if current validation loss is lower
-    if current_loss < best_loss:
-        best_loss = current_loss
-        best_model_state_dict = model.state_dict()
-        print(f"Found new best model with validation loss: {best_loss}")
-
-    # Stop training if loss significantly increases
-    if current_loss > threshold_factor * prev_loss:
-        print(f"Training stopped due to significant loss increase! (Current: {current_loss}, Previous: {prev_loss})")
-        print(f"Best model found at checkpoint: {checkpoint_path}")
-        break
-
     checkpoint = {
         'model_state_dict': best_model_state_dict,  # Use best model state
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss': prev_loss,
         'learning_rate': learning_rate,
     }
     torch.save(checkpoint, checkpoint_path)
-    prev_loss = current_loss  # Update previous loss
 
 print("Training and Validation Completed!" if prev_loss is None else "Training stopped due to loss increase.")
 
