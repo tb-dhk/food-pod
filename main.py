@@ -51,7 +51,7 @@ for epoch in range(epochs // 5):
 
     train_results = model.train(data=data_config_path, epochs=validation_interval, imgsz=640, batch=batch_size, lr0=learning_rate, device=device)
 
-    current_loss = train_results.results_dict  # Access validation loss directly from val_results
+    current_loss = train_results.results_dict["cls_loss"]  # Access validation loss directly from val_results
     model.val()
 
     # Update best model if current validation loss is lower
