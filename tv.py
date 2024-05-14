@@ -37,7 +37,6 @@ def redistribute_tv(directory, train_ratio):
         train_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/train/')
         val_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/val/')
 
-        print(train_label_file)
         if os.path.exists(train_label_file):
             return train_label_file
         elif os.path.exists(val_label_file):
