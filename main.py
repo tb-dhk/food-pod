@@ -5,7 +5,7 @@ from ultralytics import YOLO, utils
 
 from tt import redistribute_tt
 
-redistribute_tt("./datasets/data/fast_food/popcorn_chicken/images", 0.8)
+redistribute_tt("./datasets/data/fast_food/popcorn_chicken/images", 0.6, 0.3)
 
 data_dir = Path("data")
 data_config_path = data_dir / "data.yaml"

@@ -2,13 +2,16 @@ import os
 import shutil
 import random
 
-def redistribute_tt(directory, train_ratio):
-    # Check if train and test directories exist. If not, create them.
+def redistribute_tt(directory, train_ratio, val_ratio):
+    # Check if train, validation, and test directories exist. If not, create them.
     train_dir = os.path.join(directory, 'train')
+    val_dir = os.path.join(directory, 'val')
     test_dir = os.path.join(directory, 'test')
 
     if not os.path.exists(train_dir):
         os.makedirs(train_dir)
+    if not os.path.exists(val_dir):
+        os.makedirs(val_dir)
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
 
@@ -33,40 +36,43 @@ def redistribute_tt(directory, train_ratio):
         # Extract the directory inside 'labels'
         label_dir = parent_dir.split(os.path.sep)[-1]
 
-        # Derive the label file paths for both train and test directories
+        # Derive the label file paths for train, val, and test directories
         train_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/train/')
+        val_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/val/')
         test_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/test/')
 
         if os.path.exists(train_label_file):
             return train_label_file
+        elif os.path.exists(val_label_file):
+            return val_label_file
         elif os.path.exists(test_label_file):
             return test_label_file
 
-    # Calculate the number of files to move to the train directory
+    # Calculate the number of files for train, val, and test directories
     total_files = len([file for file in all_files if file.endswith(('.jpg', '.jpeg', '.png'))])
     train_count = int(train_ratio * total_files)
+    val_count = int(val_ratio * total_files)
+    test_count = total_files - train_count - val_count
 
     train_image_count = 0
+    val_image_count = 0
 
-    # Move files to train and test directories
+    # Move files to train, val, and test directories
     for file in all_files:
-        if file.endswith(('.jpg', '.jpeg', '.png')) and train_image_count < train_count:
-            dst_img = os.path.join(train_dir, os.path.basename(file))
-            shutil.move(file, dst_img)
-            train_image_count += 1
+        if file.endswith(('.jpg', '.jpeg', '.png')):
+            if train_image_count < train_count:
+                dst_img = os.path.join(train_dir, os.path.basename(file))
+                train_image_count += 1
+            elif val_image_count < val_count:
+                dst_img = os.path.join(val_dir, os.path.basename(file))
+                val_image_count += 1
+            else:
+                dst_img = os.path.join(test_dir, os.path.basename(file))
 
-            label_file = find_label_file(file)
-            dst_label = os.path.join(train_dir.replace("images", "labels"), os.path.basename(label_file))
-            if not os.path.exists(os.path.dirname(dst_label)):
-                os.makedirs(os.path.dirname(dst_label))
-            shutil.move(label_file, dst_label)
-
-        elif file.endswith(('.jpg', '.jpeg', '.png')):
-            dst_img = os.path.join(test_dir, os.path.basename(file))
             shutil.move(file, dst_img)
 
             label_file = find_label_file(file)
-            dst_label = os.path.join(test_dir.replace("images", "labels"), os.path.basename(label_file))
+            dst_label = os.path.join(os.path.dirname(dst_img.replace("images", "labels")), os.path.basename(label_file))
             if not os.path.exists(os.path.dirname(dst_label)):
                 os.makedirs(os.path.dirname(dst_label))
             shutil.move(label_file, dst_label)
@@ -74,5 +80,5 @@ def redistribute_tt(directory, train_ratio):
     print("Redistribution complete.")
 
 # Example usage:
-# redistribute_tt('./datasets/data/images/fast_food/popcorn_chicken/', 0.8)
+# redistribute_tt('./datasets/data/images/fast_food/popcorn_chicken/', 0.6, 0.2)
 

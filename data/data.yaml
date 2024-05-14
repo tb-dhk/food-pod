@@ -1,5 +1,19 @@
-train: "fast_food/popcorn_chicken/images/train"  # Path to your training image directory
-val: "fast_food/popcorn_chicken/images/val"  # Path to your validation image directory (optional)
-test: "fast_food/popcorn_chicken/images/test"  # Path to your testing image directory (optional)
-nc: 1  # Number of classes (1 for popcorn chicken)
-
+train: "fast_food/popcorn_chicken/images/train"  
+val: "fast_food/popcorn_chicken/images/val"  
+test: "fast_food/popcorn_chicken/images/test"  
+nc: 1  
+augment:
+  hsv_h: 0.5  
+  hsv_s: 0.5  
+  hsv_v: 0.5  
+  degrees: 45  
+  translate: 0.5 
+  scale: 0.5  
+  shear: 45  
+  perspective: 0.0005  
+  flipud: 0.5  
+  fliplr: 0.5  
+  bgr: 0.5
+  mosaic: 0.5 
+  mixup: 0.5
+  copy_paste: 0.5
