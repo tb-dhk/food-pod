@@ -37,8 +37,6 @@ def redistribute_tt(directory, train_ratio):
         train_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/train/')
         test_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/test/')
 
-        print(train_label_file, test_label_file)
-        
         if os.path.exists(train_label_file):
             return train_label_file
         elif os.path.exists(test_label_file):
@@ -62,7 +60,6 @@ def redistribute_tt(directory, train_ratio):
             if not os.path.exists(os.path.dirname(dst_label)):
                 os.makedirs(os.path.dirname(dst_label))
             shutil.move(label_file, dst_label)
-            print(file, "and", label_file, "moved to train")
 
         elif file.endswith(('.jpg', '.jpeg', '.png')):
             dst_img = os.path.join(test_dir, os.path.basename(file))
@@ -73,7 +70,6 @@ def redistribute_tt(directory, train_ratio):
             if not os.path.exists(os.path.dirname(dst_label)):
                 os.makedirs(os.path.dirname(dst_label))
             shutil.move(label_file, dst_label)
-            print(file, "and", label_file, "moved to test")
 
     print("Redistribution complete.")
 
