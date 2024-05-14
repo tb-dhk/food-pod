@@ -130,8 +130,8 @@ def csv_to_yolo(yolo_dir):
                     continue
             print("csv file processed")
 
-    # Clear out existing augmented images and label files in train, val, and test directories
-    for subset in ['train', 'val', 'test']:
+    # Clear out existing augmented images and label files in train, val, and directories
+    for subset in ['train', 'val']:
         for filename in os.listdir(os.path.join(images_dir, subset)):
             if "-aug" in filename:
                 os.remove(os.path.join(images_dir, subset, filename))
@@ -144,7 +144,7 @@ def csv_to_yolo(yolo_dir):
         filename = filename.replace("jpeg", "jpg")
         print("starting", filename, bounding_boxes)
         # Load the image
-        for subset in ['train', 'val', 'test']:
+        for subset in ['train', 'val']:
             image_path = os.path.join(images_dir, subset, filename)
             if os.path.exists(image_path):
                 break

@@ -3,9 +3,9 @@ from pathlib import Path
 import torch
 from ultralytics import YOLO, utils
 
-from tt import redistribute_tt
+from tv import redistribute_tv
 
-redistribute_tt("./datasets/data/fast_food/popcorn_chicken/images", 0.6, 0.3)
+redistribute_tv("./datasets/data/fast_food/popcorn_chicken/images", 0.8)
 
 data_dir = Path("data")
 data_config_path = data_dir / "data.yaml"
