@@ -58,7 +58,7 @@ for epoch in range(epochs // 5):
     }
     # torch.save(checkpoint, checkpoint_path)
 
-train_results = model.train(data=data_config_path, epochs=100, patience=5, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, val=False)
+train_results = model.train(data=data_config_path, epochs=69, patience=5, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, val=False)
 
 print("Training and Validation Completed!" if prev_loss is None else "Training stopped due to loss increase.")
 
