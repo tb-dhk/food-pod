@@ -12,45 +12,70 @@ def redistribute_tt(directory, train_ratio):
     if not os.path.exists(test_dir):
         os.makedirs(test_dir)
 
-    # Gather all files from train and test directories
+    # Gather all image files from the original directory (excluding cache files)
     all_files = []
-    for dir_path in [train_dir, test_dir]:
-        all_files.extend([os.path.join(dir_path, file) for file in os.listdir(dir_path)])
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if not file.endswith(".cache"):
+                all_files.append(os.path.join(root, file))
 
     # Shuffle the list of all files
     random.shuffle(all_files)
 
-    # Calculate the number of files to move for each directory
-    total_files = len(all_files)
+    def find_label_file(image_file):
+        # Replace 'images' with 'labels' in the image file path
+        label_file = image_file.replace('/images/', '/labels/').replace('\\images\\', '\\labels\\')
+        label_file = os.path.splitext(label_file)[0] + '.txt'
+        
+        # Get the parent directory of the image file
+        parent_dir = os.path.dirname(image_file)
+
+        # Extract the directory inside 'labels'
+        label_dir = parent_dir.split(os.path.sep)[-1]
+
+        # Derive the label file paths for both train and test directories
+        train_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/train/')
+        test_label_file = label_file.replace(f'/labels/{label_dir}/', '/labels/test/')
+
+        print(train_label_file, test_label_file)
+        
+        if os.path.exists(train_label_file):
+            return train_label_file
+        elif os.path.exists(test_label_file):
+            return test_label_file
+
+    # Calculate the number of files to move to the train directory
+    total_files = len([file for file in all_files if file.endswith(('.jpg', '.jpeg', '.png'))])
     train_count = int(train_ratio * total_files)
 
-    # Move image files and corresponding label files to train directory
-    for file in all_files[:train_count]:
-        dst_img = os.path.join(train_dir, os.path.basename(file))
-        shutil.move(file, dst_img)
-        move_corresponding_label(file, train_dir, directory)
+    train_image_count = 0
 
-    # Move image files and corresponding label files to test directory
-    for file in all_files[train_count:]:
-        dst_img = os.path.join(test_dir, os.path.basename(file))
-        shutil.move(file, dst_img)
-        move_corresponding_label(file, test_dir, directory)
+    # Move files to train and test directories
+    for file in all_files:
+        if file.endswith(('.jpg', '.jpeg', '.png')) and train_image_count < train_count:
+            dst_img = os.path.join(train_dir, os.path.basename(file))
+            shutil.move(file, dst_img)
+            train_image_count += 1
+
+            label_file = find_label_file(file)
+            dst_label = os.path.join(train_dir.replace("images", "labels"), os.path.basename(label_file))
+            if not os.path.exists(os.path.dirname(dst_label)):
+                os.makedirs(os.path.dirname(dst_label))
+            shutil.move(label_file, dst_label)
+            print(file, "and", label_file, "moved to train")
+
+        elif file.endswith(('.jpg', '.jpeg', '.png')):
+            dst_img = os.path.join(test_dir, os.path.basename(file))
+            shutil.move(file, dst_img)
+
+            label_file = find_label_file(file)
+            dst_label = os.path.join(test_dir.replace("images", "labels"), os.path.basename(label_file))
+            if not os.path.exists(os.path.dirname(dst_label)):
+                os.makedirs(os.path.dirname(dst_label))
+            shutil.move(label_file, dst_label)
+            print(file, "and", label_file, "moved to test")
 
     print("Redistribution complete.")
-
-def move_corresponding_label(image_file, dest_dir, root_directory):
-    # Extract the file name without extension
-    filename = os.path.splitext(os.path.basename(image_file))[0]
-    
-    # Find the corresponding label file in labels directory
-    labels_dir = root_directory.replace("images", "labels") 
-    for subdir, _, files in os.walk(labels_dir):
-        for file in files:
-            if file.startswith(filename) and file.endswith('.txt'):
-                src_label = os.path.join(subdir, file)
-                dst_label = os.path.join(dest_dir.replace("images", "labels"), file)
-                shutil.move(src_label, dst_label)
-                return
 
 # Example usage:
 # redistribute_tt('./datasets/data/images/fast_food/popcorn_chicken/', 0.8)
