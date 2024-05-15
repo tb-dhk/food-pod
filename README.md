@@ -30,6 +30,15 @@ data/
 └── data.yaml
 ```
 
+## makefile targets
+
+- **move_train_images**: moves training images to `./datasets/data/<food_category>/<food_name>/images/train`.
+- **move_test_images**: moves testing images to `./datasets/data/<food_category>/<food_name>/images/test`.
+- **move_labels**: moves label files to `./datasets/data/<food_category>/<food_name>/boxes`.
+- **convert_and_augment**: converts and augments the training images using `convert.py`.
+- **split_images**: splits the images between training and validation sets using `tv.py`.
+- **train_model**: trains the model using a specified yaml configuration file. calls `update_yaml` to update paths in `data.yaml`.
+
 ## steps
 
 ### step 1: source images
@@ -102,7 +111,7 @@ make train_model category=<food_category> name=<food_name>
 
 ### example
 
-to run the complete process, use the following commands in order:
+to run steps 3 to 8, use the following commands in order:
 
 ```sh
 make move_train_images category=fast_food name=popcorn_chicken src_train_images=./my_train_images
@@ -112,19 +121,6 @@ make convert_and_augment category=fast_food name=popcorn_chicken
 make split_images category=fast_food name=popcorn_chicken ratio=0.8
 make train_model category=fast_food name=popcorn_chicken
 ```
-
-## makefile targets
-
-- **move_train_images**: moves training images to `./datasets/data/<food_category>/<food_name>/images/train`.
-- **move_test_images**: moves testing images to `./datasets/data/<food_category>/<food_name>/images/test`.
-- **move_labels**: moves label files to `./datasets/data/<food_category>/<food_name>/boxes`.
-- **convert_and_augment**: converts and augments the training images using `convert.py`.
-- **split_images**: splits the images between training and validation sets using `tv.py`.
-- **train_model**: trains the model using a specified yaml configuration file. calls `update_yaml` to update paths in `data.yaml`.
-
-## customizing the training script
-
-ensure your `train.py` script is configured to read the paths from `data.yaml` and train the model accordingly.
 
 ## updating data.yaml
 
