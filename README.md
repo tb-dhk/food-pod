@@ -1,17 +1,17 @@
-# Data Preparation and Model Training
+# data preparation and model training
 
-This project helps you prepare image data, augment it, split it into training and validation sets, and train a model using YOLO format annotations. The Makefile automates these steps.
+this project helps you prepare image data, augment it, split it into training and validation sets, and train a model using yolo format annotations. the makefile automates these steps.
 
-## Prerequisites
+## prerequisites
 
-Ensure you have the following installed:
-- Python (version 3.6 or higher)
-- Required Python packages (you can install them using `pip install -r requirements.txt`)
-- Make
+ensure you have the following installed:
+- python (version 3.6 or higher)
+- required python packages (you can install them using `pip install -r requirements.txt`)
+- make
 
-## Directory Structure
+## directory structure
 
-Your project directory should look like this:
+the output of `tree -d` should look like this:
 
 ```
 datasets/
@@ -22,89 +22,87 @@ datasets/
             │   ├── train/
             │   ├── val/
             │   └── test/
+            ├── labels/
+            │   ├── train/
+            │   └── val/
             └── boxes/
 data/
 └── data.yaml
-convert.py
-tv.py
-train.py
-Makefile
-README.md
 ```
 
-## Steps
+## steps
 
-### Step 1: Source Images
+### step 1: source images
 
-Collect images for your food category and food name. You should have separate sets of images for training and testing. Place them in directories of your choice.
+collect images for your food category and food name. you should have separate sets of images for training and testing. place them in directories of your choice.
 
-### Step 2: Annotate Training Images Using VGG Image Annotator
+### step 2: annotate training images using vgg image annotator
 
-Use the [VGG Image Annotator (VIA)](https://www.robots.ox.ac.uk/~vgg/software/via/) to create label files for your training images. Export the annotations as CSV files. Note that testing images do not require label files.
+use the [vgg image annotator (via)](https://www.robots.ox.ac.uk/~vgg/software/via/) to create label files for your training images. export the annotations as csv files. note that testing images do not require label files.
 
-### Step 3: Move Training Images
+### step 3: move training images
 
-Place your training images in a directory of your choice. This directory path will be used as `src_train_images`.
+place your training images in a directory of your choice. this directory path will be used as `src_train_images`.
 
-Run the command:
+run the command:
 
 ```sh
 make move_train_images category=<food_category> name=<food_name> src_train_images=<path/to/train/images>
 ```
 
-### Step 4: Move Testing Images
+### step 4: move testing images
 
-Place your testing images in a directory of your choice. This directory path will be used as `src_test_images`.
+place your testing images in a directory of your choice. this directory path will be used as `src_test_images`.
 
-Run the command:
+run the command:
 
 ```sh
 make move_test_images category=<food_category> name=<food_name> src_test_images=<path/to/test/images>
 ```
 
-### Step 5: Move Label Files
+### step 5: move label files
 
-Place your label files in a directory of your choice. This directory path will be used as `src_label_files`.
+place your label files in a directory of your choice. this directory path will be used as `src_label_files`.
 
-Run the command:
+run the command:
 
 ```sh
 make move_labels category=<food_category> name=<food_name> src_label_files=<path/to/label/files>
 ```
 
-### Step 6: Convert and Augment Training Images
+### step 6: convert and augment training images
 
-Convert and augment the training images using `convert.py`. This step uses the food category and food name to identify the correct directory.
+convert and augment the training images using `convert.py`. this step uses the food category and food name to identify the correct directory.
 
-Run the command:
+run the command:
 
 ```sh
 make convert_and_augment category=<food_category> name=<food_name>
 ```
 
-### Step 7: Split Images Between Train and Validation Sets
+### step 7: split images between train and validation sets
 
-Split the images into training and validation sets using `tv.py`. You need to provide the food category, food name, and the ratio of images to use for training.
+split the images into training and validation sets using `tv.py`. you need to provide the food category, food name, and the ratio of images to use for training.
 
-Run the command:
+run the command:
 
 ```sh
 make split_images category=<food_category> name=<food_name> ratio=<train_ratio>
 ```
 
-### Step 8: Train the Model
+### step 8: train the model
 
-Train the model using the updated `data.yaml` file. This step also updates the paths in `data.yaml`.
+train the model using the updated `data.yaml` file. this step also updates the paths in `data.yaml`.
 
-Run the command:
+run the command:
 
 ```sh
 make train_model category=<food_category> name=<food_name>
 ```
 
-### Example
+### example
 
-To run the complete process, use the following commands in order:
+to run the complete process, use the following commands in order:
 
 ```sh
 make move_train_images category=fast_food name=popcorn_chicken src_train_images=./my_train_images
@@ -115,22 +113,22 @@ make split_images category=fast_food name=popcorn_chicken ratio=0.8
 make train_model category=fast_food name=popcorn_chicken
 ```
 
-## Makefile Targets
+## makefile targets
 
-- **move_train_images**: Moves training images to `./datasets/data/<food_category>/<food_name>/images/train`.
-- **move_test_images**: Moves testing images to `./datasets/data/<food_category>/<food_name>/images/test`.
-- **move_labels**: Moves label files to `./datasets/data/<food_category>/<food_name>/boxes`.
-- **convert_and_augment**: Converts and augments the training images using `convert.py`.
-- **split_images**: Splits the images between training and validation sets using `tv.py`.
-- **train_model**: Trains the model using a specified YAML configuration file. Calls `update_yaml` to update paths in `data.yaml`.
+- **move_train_images**: moves training images to `./datasets/data/<food_category>/<food_name>/images/train`.
+- **move_test_images**: moves testing images to `./datasets/data/<food_category>/<food_name>/images/test`.
+- **move_labels**: moves label files to `./datasets/data/<food_category>/<food_name>/boxes`.
+- **convert_and_augment**: converts and augments the training images using `convert.py`.
+- **split_images**: splits the images between training and validation sets using `tv.py`.
+- **train_model**: trains the model using a specified yaml configuration file. calls `update_yaml` to update paths in `data.yaml`.
 
-## Customizing the Training Script
+## customizing the training script
 
-Ensure your `train.py` script is configured to read the paths from `data.yaml` and train the model accordingly.
+ensure your `train.py` script is configured to read the paths from `data.yaml` and train the model accordingly.
 
-## Updating data.yaml
+## updating data.yaml
 
-The `train_model` target in the Makefile updates the `data.yaml` file with the correct paths:
+the `train_model` target in the makefile updates the `data.yaml` file with the correct paths:
 
 ```yaml
 train: "<food_category>/<food_name>/images/train"
@@ -139,8 +137,8 @@ test: "<food_category>/<food_name>/images/test"
 nc: 1
 ```
 
-## Notes
+## notes
 
-- Ensure the images and labels are correctly formatted and placed in the respective directories before running the Makefile.
-- Modify the `convert.py`, `tv.py`, and `train.py` scripts according to your specific requirements.
+- ensure the images and labels are correctly formatted and placed in the respective directories before running the makefile.
+- modify the `convert.py`, `tv.py`, and `train.py` scripts according to your specific requirements.
 
