@@ -61,7 +61,7 @@ when exporting the annotations from via, ensure that the output format matches t
 
 make sure that the exported csv files contain accurate annotations for each image in your training dataset. the label files should accurately represent the objects present in the images and provide all necessary information for training your model.
 
-note that label files are not required for testing images, as they are not used for training purposes.
+note that label files are only required for training purposes and are thus not required for testing images.
 
 ### step 3: move training images
 
