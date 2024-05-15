@@ -47,7 +47,21 @@ collect images for your food category and food name. you should have separate se
 
 ### step 2: annotate training images using vgg image annotator
 
-use the [vgg image annotator (via)](https://www.robots.ox.ac.uk/~vgg/software/via/) to create label files for your training images. export the annotations as csv files. note that testing images do not require label files.
+use the [vgg image annotator (via)](https://www.robots.ox.ac.uk/~vgg/software/via/) to annotate objects in your training images. ensure that you label the correct file names and assign the correct classes to the annotated objects. 
+
+when exporting the annotations from via, ensure that the output format matches the following:
+
+- **csv format**: export the annotations as csv files.
+- **annotation format**: each annotation should include the following information:
+  - **image filename**: the filename of the annotated image.
+  - **object identifier**: an identifier for the annotated object.
+  - **attributes**: additional attributes associated with the annotation, such as shape, coordinates, and class id.
+  - **bounding box coordinates**: the coordinates of the bounding box around the annotated object.
+  - **class id**: the identifier or label assigned to the class of the annotated object.
+
+make sure that the exported csv files contain accurate annotations for each image in your training dataset. the label files should accurately represent the objects present in the images and provide all necessary information for training your model.
+
+note that label files are not required for testing images, as they are not used for training purposes.
 
 ### step 3: move training images
 
