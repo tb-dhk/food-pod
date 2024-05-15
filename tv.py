@@ -1,6 +1,7 @@
 import os
 import shutil
 import random
+import sys
 
 def redistribute_tv(directory, train_ratio):
     # Check if train and validation directories exist. If not, create them.
@@ -70,6 +71,19 @@ def redistribute_tv(directory, train_ratio):
 
     print("Redistribution complete.")
 
-# Example usage:
-# redistribute_tv('./datasets/data/images/fast_food/popcorn_chicken/', 0.6, 0.2)
+if __name__ == "__main__":
+    # Check if the correct number of arguments are provided
+    if len(sys.argv) != 4:
+        print("Usage: python script_name.py <food_category> <food_name> <ratio>")
+        sys.exit(1)
 
+    # Parse command-line arguments
+    food_category = sys.argv[1]
+    food_name = sys.argv[2]
+    ratio = float(sys.argv[3])
+
+    # Construct the directory path
+    directory = f'./datasets/data/{food_category}/{food_name}/images'
+
+    # Call the redistribution function
+    redistribute_tv(directory, ratio)
