@@ -42,18 +42,18 @@ move_labels:
 # Convert and augment training images
 .PHONY: convert_and_augment
 convert_and_augment:
-	python convert.py $(BASE_DIR)
+	python3 convert.py $(BASE_DIR)
 
 # Split images between train and val
 .PHONY: split_images
 split_images:
-	python tv.py $(FOOD_CATEGORY) $(FOOD_NAME) $(TRAIN_RATIO)
+	python3 tv.py $(FOOD_CATEGORY) $(FOOD_NAME) $(TRAIN_RATIO)
 
 # Train the model
 .PHONY: train_model
 train_model: update_yaml
 	# Assuming you have a training script, adjust the command as needed
-	python train.py --data $(DATA_YAML) --cfg your_model_config.yaml
+	python3 train.py --data $(DATA_YAML) --cfg your_model_config.yaml
 
 # Update the data.yaml file
 .PHONY: update_yaml
@@ -69,4 +69,4 @@ all: move_train_images move_test_images move_labels convert_and_augment split_im
 	@echo "All tasks completed."
 
 # Usage: make category=fast_food name=popcorn_chicken ratio=0.8 src_train_images=path/to/train/images src_test_images=path/to/test/images src_label_files=path/to/label/files
-cken ratio=0.8
+

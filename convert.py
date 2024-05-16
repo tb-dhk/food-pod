@@ -132,12 +132,18 @@ def csv_to_yolo(yolo_dir):
 
     # Clear out existing augmented images and label files in train, val, and directories
     for subset in ['train', 'val']:
-        for filename in os.listdir(os.path.join(images_dir, subset)):
-            if "-aug" in filename:
-                os.remove(os.path.join(images_dir, subset, filename))
+        try:
+            for filename in os.listdir(os.path.join(images_dir, subset)):
+                if "-aug" in filename:
+                    os.remove(os.path.join(images_dir, subset, filename))
+        except:
+            pass
 
-        for filename in os.listdir(os.path.join(labels_dir, subset)):
-            os.remove(os.path.join(labels_dir, subset, filename))
+        try:
+            for filename in os.listdir(os.path.join(labels_dir, subset)):
+                os.remove(os.path.join(labels_dir, subset, filename))
+        except:
+            pass
 
     # Iterate through images and augmentations
     for filename, bounding_boxes in image_bbox_dict.items():
@@ -155,6 +161,7 @@ def csv_to_yolo(yolo_dir):
         image = Image.open(image_path)
 
         yolo_filename = os.path.join(labels_dir, subset, f"{os.path.splitext(filename)[0]}.txt")
+        os.makedirs(os.path.dirname(yolo_filename), exist_ok=True)
         with open(yolo_filename, 'w') as yolo_file:
             for box in bounding_boxes:
                 x_center = (box[0] + box[2]) / (2.0 * image.width)
@@ -177,6 +184,7 @@ def csv_to_yolo(yolo_dir):
 
             # Save corresponding text file with YOLO format
             yolo_filename = os.path.join(labels_dir, subset, os.path.splitext(filename)[0] + f"-aug{idx}.txt")
+            os.makedirs(os.path.dirname(yolo_filename), exist_ok=True)
             with open(yolo_filename, 'w') as yolo_file:
                 for box in bounding_boxes:
                     x_center = (box[0] + box[2]) / (2.0 * image.width)
