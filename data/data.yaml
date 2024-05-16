@@ -1,4 +1,4 @@
-train: fast_food/french_fries/images/train
-val: fast_food/french_fries/images/val
-test: fast_food/french_fries/images/test
-nc: 1
+train: "fast_food/french_fries/images/train"
+val: "fast_food/french_fries/images/val"
+test: "fast_food/french_fries/images/test"
+nc: 2
