@@ -80,12 +80,20 @@ split the images into training and validation sets using `tv.py`. use the follow
 make split_images category=<food_category> name=<food_name> ratio=<train_ratio>
 ```
 
-### step 8: train the model
+### step 8: update `data/data.yaml`
 
-train the model using the updated `data.yaml` file. use the following command:
+update the `data.yaml` file to reflect the appropriate directories. use the following command:
 
 ```sh
-make train_model category=<food_category> name=<food_name>
+make update_yaml category=<food_category> name=<food_name>
+```
+
+### step 9: train the model.
+
+run `main.py`.
+
+```sh
+python3 main.py
 ```
 
 ## updating data.yaml

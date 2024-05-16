@@ -49,12 +49,6 @@ convert_and_augment:
 split_images:
 	python3 tv.py $(FOOD_CATEGORY) $(FOOD_NAME) $(TRAIN_RATIO)
 
-# Train the model
-.PHONY: train_model
-train_model: update_yaml
-	# Assuming you have a training script, adjust the command as needed
-	python3 main.py
-
 # Update the data.yaml file
 .PHONY: update_yaml
 update_yaml:
