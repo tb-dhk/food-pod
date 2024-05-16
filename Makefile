@@ -53,7 +53,7 @@ split_images:
 .PHONY: train_model
 train_model: update_yaml
 	# Assuming you have a training script, adjust the command as needed
-	python3 main.py --data $(DATA_YAML) --cfg your_model_config.yaml
+	python3 main.py
 
 # Update the data.yaml file
 .PHONY: update_yaml
