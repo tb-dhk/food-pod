@@ -22,7 +22,7 @@ epochs = 100
 batch_size = 8
 learning_rate = 0.001
 
-model = YOLO("yolov8s.pt").to(device)
+model = YOLO("models/yolov8s.pt").to(device)
 
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
