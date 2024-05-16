@@ -51,7 +51,7 @@ verify_data_and_labels(data_config_path)
 
 # Train the model
 try:
-    train_results = model.train(data=data_config_path, epochs=69, patience=5, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, val=False)
+    train_results = model.train(data=data_config_path, epochs=100, patience=5, imgsz=640, batch=batch_size, lr0=learning_rate, device=device, val=False)
     print("Training and Validation Completed!")
 except RuntimeError as e:
     print(f"RuntimeError during training: {e}")
