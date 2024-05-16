@@ -58,9 +58,9 @@ train_model: update_yaml
 # Update the data.yaml file
 .PHONY: update_yaml
 update_yaml:
-	@echo "train: $(FOOD_CATEGORY)/$(FOOD_NAME)/train" > $(DATA_YAML)
-	@echo "val: $(FOOD_CATEGORY)/$(FOOD_NAME)/val" >> $(DATA_YAML)
-	@echo "test: $(FOOD_CATEGORY)/$(FOOD_NAME)/test" >> $(DATA_YAML)
+	@echo "train: $(FOOD_CATEGORY)/$(FOOD_NAME)/images/train" > $(DATA_YAML)
+	@echo "val: $(FOOD_CATEGORY)/$(FOOD_NAME)/images/val" >> $(DATA_YAML)
+	@echo "test: $(FOOD_CATEGORY)/$(FOOD_NAME)/images/test" >> $(DATA_YAML)
 	@echo "nc: 1" >> $(DATA_YAML)
 
 # Default target
