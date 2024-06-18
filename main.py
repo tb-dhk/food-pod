@@ -13,9 +13,6 @@ data_config_path = data_dir / "data.yaml"
 with open(data_config_path, 'r') as file:
     data_config = yaml.safe_load(file)
 
-train_dir = Path(data_config['train'])
-val_dir = Path(data_config['val'])
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 epochs = 100
