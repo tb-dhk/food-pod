@@ -1,0 +1,6 @@
+filename,file_size,file_attributes,region_count,region_id,region_shape_attributes,region_attributes
+img2.png,197002,"{}",2,0,"{""name"":""rect"",""x"":159,""y"":131,""width"":594,""height"":838}","{""class_id"":""0""}"
+img2.png,197002,"{}",2,1,"{""name"":""rect"",""x"":708,""y"":445,""width"":583,""height"":517}","{""class_id"":""2""}"
+img3.png,876089,"{}",3,0,"{""name"":""rect"",""x"":103,""y"":401,""width"":1757,""height"":2140}","{""class_id"":""0""}"
+img3.png,876089,"{}",3,1,"{""name"":""rect"",""x"":1216,""y"":1138,""width"":1782,""height"":1471}","{""class_id"":""2""}"
+img3.png,876089,"{}",3,2,"{""name"":""rect"",""x"":1639,""y"":1013,""width"":237,""height"":109}","{""class_id"":""2""}"

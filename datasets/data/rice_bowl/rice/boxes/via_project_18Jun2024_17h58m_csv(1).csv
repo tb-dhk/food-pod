@@ -1,0 +1,4 @@
+filename,file_size,file_attributes,region_count,region_id,region_shape_attributes,region_attributes
+img6.png,2019927,"{}",1,0,"{""name"":""rect"",""x"":131,""y"":31,""width"":1056,""height"":899}","{""class_id"":""2""}"
+img7.png,1128578,"{}",2,0,"{""name"":""rect"",""x"":39,""y"":122,""width"":1050,""height"":586}","{""class_id"":""2""}"
+img7.png,1128578,"{}",2,1,"{""name"":""rect"",""x"":943,""y"":3,""width"":332,""height"":94}","{""class_id"":""2""}"
