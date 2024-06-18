@@ -1,4 +1,23 @@
-train: "fast_food/french_fries/images/train"
-val: "fast_food/french_fries/images/val"
-test: "fast_food/french_fries/images/test"
-nc: 2
+train:
+  - "fast_food/popcorn_chicken/images/train"
+  - "fast_food/french_fries/images/train"
+  - "rice_bowl/rice/images/train"
+  - "fast_food/popcorn_chicken_rice/images/train"
+  - "rice_bowl/chicken_cutlet_rice/images/train"
+
+val: 
+  - "fast_food/popcorn_chicken/images/val"
+  - "fast_food/french_fries/images/val"
+  - "rice_bowl/rice/images/val"
+  - "fast_food/popcorn_chicken_rice/images/val"
+  - "rice_bowl/chicken_cutlet_rice/images/val"
+
+test: 
+  - "fast_food/popcorn_chicken/images/test"
+  - "fast_food/french_fries/images/test"
+  - "rice_bowl/rice/images/test"
+  - "fast_food/popcorn_chicken_rice/images/test"
+  - "rice_bowl/chicken_cutlet_rice/images/test"
+
+nc: 4
+
