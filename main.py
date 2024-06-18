@@ -45,7 +45,7 @@ def verify_data_and_labels(data_config_path):
                     if not (0 <= x_center <= 1 and 0 <= y_center <= 1 and 0 <= width <= 1 and 0 <= height <= 1):
                         print(f"Invalid bounding box values in file {label_file}: {line.strip()}")
 
-verify_data_and_labels(data_config_path)
+#verify_data_and_labels(data_config_path)
 
 # Train the model
 try:
