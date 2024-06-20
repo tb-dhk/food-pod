@@ -6,6 +6,7 @@ from hx711 import HX711
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 # Define the GPIO pins for the HX711
 DT_PIN = 5
