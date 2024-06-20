@@ -2,5 +2,5 @@ torch
 torchvision  # This is likely also needed for YOLOv8
 yolov8
 imgaug
-RPi.GPIO==0.7.0  # Library for accessing Raspberry Pi GPIO pins
-hx711==0.2.2      # Library for HX711 load cell amplifier
+RPi.GPIO  # Library for accessing Raspberry Pi GPIO pins
+hx711      # Library for HX711 load cell amplifier
