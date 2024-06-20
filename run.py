@@ -10,11 +10,11 @@ def take_picture():
         # Construct the output file name
         filename = f"{timestamp}.jpg"
         
-        # Construct the command
-        command = ["rpicam-jpeg", "-o", filename, "--vflip"]
+        # Construct the command with the -n flag
+        command = ["rpicam-jpeg", "-o", filename, "--vflip", "-n"]
         
-        # Run the command
-        subprocess.run(command)
+        # Run the command, suppressing the output
+        subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         
         # Get the current time for the log message
         log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
