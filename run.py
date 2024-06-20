@@ -20,19 +20,19 @@ offset = 0
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{log_time}] {message.lower()}")
+    print(f"\r[{log_time}] {message.lower()}", end="", flush=True)
 
 def clean_and_exit():
     log_message("Cleaning...")
     GPIO.cleanup()
-    log_message("Bye!")
+    log_message("Bye!\n")
     sys.exit()
 
 def zero_scale():
     log_message("Taring scale...")
     hx.reset()  # Reset the HX711
     hx.tare()   # Tare the scale to zero
-    log_message("Tare done!")
+    log_message("Tare done!\n")
 
 def get_weight():
     try:
@@ -56,13 +56,16 @@ def take_picture():
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     
     # Log the picture taken message
-    log_message(f"Picture taken and saved as {filename}")
+    log_message(f"\rPicture taken and saved as {filename}\n")
+    log_message("waiting for weight change...")
 
 def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
-    log_message("waiting for weight change...")
+    log_message("\nwaiting for weight change...")
+    x = 0
     while True:
+        log_message(f"\rwaiting for weight change ({x} times) ...")
         current_weight = get_weight()
         
         # Check if there's a significant change in weight
@@ -72,10 +75,11 @@ def monitor_weight():
         
         # Wait for a short time before checking again
         time.sleep(1)
+        x += 1
 
 if __name__ == "__main__":
     zero_scale()  # Tare the scale to zero
-    log_message("Starting weight monitoring...")
+    log_message("Starting weight monitoring...\n")
     
     try:
         monitor_weight()
