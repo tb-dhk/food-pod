@@ -68,8 +68,8 @@ def monitor_weight():
         time.sleep(1)
 
 if __name__ == "__main__":
-    hx.tare()  # Tare the scale to zero
-    log_message("Tare done! Starting weight monitoring...")
+    hx.reset()  # reset the scale to zero
+    log_message("reset done! Starting weight monitoring...")
     
     try:
         monitor_weight()
