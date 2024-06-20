@@ -78,7 +78,6 @@ def monitor_weight():
         x += 1
 
 if __name__ == "__main__":
-    print("start!")
     zero_scale()  # Tare the scale to zero
     log_message("Starting weight monitoring...\n")
     
