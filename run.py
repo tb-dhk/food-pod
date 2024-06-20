@@ -8,7 +8,7 @@ def take_picture():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         # Construct the output file name
-        filename = f"{timestamp}.jpg"
+        filename = f"~/foodpod/{timestamp}.jpg"
         
         # Construct the command with the -n flag
         command = ["rpicam-jpeg", "-o", filename, "--vflip", "-n"]
