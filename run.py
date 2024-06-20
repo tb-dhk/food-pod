@@ -20,7 +20,7 @@ offset = 0
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{log_time}] {message}")
+    print(f"[{log_time}] {message.lower()}")
 
 def clean_and_exit():
     log_message("Cleaning...")
@@ -61,7 +61,7 @@ def take_picture():
 def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
-    
+    log_message("waiting for weight change...")
     while True:
         current_weight = get_weight()
         
