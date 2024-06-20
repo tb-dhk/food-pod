@@ -28,6 +28,12 @@ def clean_and_exit():
     log_message("Bye!")
     sys.exit()
 
+def zero_scale():
+    log_message("Taring scale...")
+    hx.reset()  # Reset the HX711
+    hx.tare()   # Tare the scale to zero
+    log_message("Tare done!")
+
 def get_weight():
     try:
         val = hx.get_weight(5)
@@ -41,7 +47,7 @@ def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
     # Construct the output file name
-    filename = f"~/foodpod/{timestamp}.jpg"
+    filename = f"/home/pi/foodpod/{timestamp}.jpg"
     
     # Construct the command with the -n flag
     command = ["rpicam-jpeg", "-o", filename, "--vflip", "-n"]
@@ -68,8 +74,8 @@ def monitor_weight():
         time.sleep(1)
 
 if __name__ == "__main__":
-    hx.reset()  # reset the scale to zero
-    log_message("reset done! Starting weight monitoring...")
+    zero_scale()  # Tare the scale to zero
+    log_message("Starting weight monitoring...")
     
     try:
         monitor_weight()
