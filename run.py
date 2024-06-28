@@ -3,7 +3,6 @@ import time
 import sys
 from datetime import datetime
 import RPi.GPIO as GPIO
-from hx711 import HX711
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
@@ -13,8 +12,94 @@ GPIO.setwarnings(False)
 DT_PIN = 5
 SCK_PIN = 6
 
+def createBoolList(size=8):
+    return [False] * size
+
+class HX711:
+    def __init__(self, dout, pd_sck, gain=128):
+        self.PD_SCK = pd_sck
+        self.DOUT = dout
+
+        GPIO.setup(self.PD_SCK, GPIO.OUT)
+        GPIO.setup(self.DOUT, GPIO.IN)
+
+        self.GAIN = 0
+        self.OFFSET = 0
+        self.SCALE = 1
+        self.lastVal = 0
+
+        self.set_gain(gain)
+
+    def is_ready(self):
+        return GPIO.input(self.DOUT) == 0
+
+    def set_gain(self, gain):
+        if gain == 128:
+            self.GAIN = 1
+        elif gain == 64:
+            self.GAIN = 3
+        elif gain == 32:
+            self.GAIN = 2
+
+        GPIO.output(self.PD_SCK, False)
+        self.read()
+
+    def read(self):
+        while not self.is_ready():
+            pass
+
+        dataBits = [createBoolList(), createBoolList(), createBoolList()]
+
+        for j in range(2, -1, -1):
+            for i in range(7, -1, -1):
+                GPIO.output(self.PD_SCK, True)
+                dataBits[j][i] = GPIO.input(self.DOUT)
+                GPIO.output(self.PD_SCK, False)
+
+        GPIO.output(self.PD_SCK, True)
+        GPIO.output(self.PD_SCK, False)
+
+        if all(item == True for item in dataBits[0]):
+            return self.lastVal
+
+        bits = []
+        for i in range(2, -1, -1):
+            bits += dataBits[i]
+
+        self.lastVal = int(''.join(map(str, bits)), 2)
+        return self.lastVal
+
+    def read_average(self, times=3):
+        sum = 0
+        for i in range(times):
+            sum += self.read()
+        return sum / times
+
+    def get_value(self, times=3):
+        return self.read_average(times) - self.OFFSET
+
+    def get_units(self, times=3):
+        return self.get_value(times) / self.SCALE
+
+    def tare(self, times=15):
+        sum = self.read_average(times)
+        self.set_offset(sum)
+
+    def set_scale(self, scale):
+        self.SCALE = scale
+
+    def set_offset(self, offset):
+        self.OFFSET = offset
+
+    def power_down(self):
+        GPIO.output(self.PD_SCK, False)
+        GPIO.output(self.PD_SCK, True)
+
+    def power_up(self):
+        GPIO.output(self.PD_SCK, False)
+
 # Initialize the HX711
-hx = HX711(dout_pin=DT_PIN, pd_sck_pin=SCK_PIN)
+hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -28,32 +113,21 @@ def clean_and_exit():
 
 def zero_scale():
     log_message("Taring scale...")
-    hx.reset()  # Reset the HX711
+    hx.tare()  # Tare the HX711
     log_message("Tare done!\n")
 
 def get_weight():
     try:
-        measures = hx.get_raw_data(num_measures=5)
-        average_measure = sum(measures) / len(measures)
-        weight = average_measure  # Adjust as per your calibration
+        weight = hx.get_units(5)
         return weight
     except (KeyboardInterrupt, SystemExit):
         clean_and_exit()
 
 def take_picture():
-    # Get the current timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    
-    # Construct the output file name
     filename = f"/home/pi/foodpod/{timestamp}.jpg"
-    
-    # Construct the command with the -n flag
     command = ["raspistill", "-o", filename, "--vflip", "-n"]
-    
-    # Run the command, suppressing the output
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    
-    # Log the picture taken message
     log_message(f"\nPicture taken and saved as {filename}\n")
     log_message("Waiting for weight change...")
 
@@ -66,12 +140,10 @@ def monitor_weight():
         log_message(f"\rWaiting for weight change ({x} times)...")
         current_weight = get_weight()
         
-        # Check if there's a significant change in weight
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
             take_picture()
             prev_weight = current_weight
         
-        # Wait for a short time before checking again
         time.sleep(1)
         x += 1
 
