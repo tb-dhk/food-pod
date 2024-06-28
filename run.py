@@ -137,7 +137,7 @@ def monitor_weight():
     log_message("\nWaiting for weight change...")
     x = 0
     while True:
-        log_message(f"\rWaiting for weight change ({x} times)...")
+        log_message(f"\rWaiting for weight change (now {prev_weight}, {x} times)...")
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
