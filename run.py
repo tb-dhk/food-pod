@@ -103,7 +103,7 @@ hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"\r[{log_time}] {message}", end="", flush=True)
+    print(f"\r[{log_time}] {message}")
 
 def clean_and_exit():
     log_message("Cleaning...")
@@ -128,7 +128,7 @@ def take_picture():
     filename = f"/home/pi/foodpod/{timestamp}.jpg"
     command = ["libcamera-still", "-o", filename, "--vflip", "-n"]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    log_message(f"\nPicture taken and saved as {filename}\n")
+    log_message(f"Picture taken and saved as {filename}")
     log_message("Waiting for weight change...")
 
 def monitor_weight():
