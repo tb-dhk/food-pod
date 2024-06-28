@@ -32,7 +32,6 @@ def clean_and_exit():
 def zero_scale():
     log_message("Taring scale...")
     hx.reset()  # Reset the HX711
-    hx.tare()   # Tare the scale to zero
     log_message("Tare done!\n")
 
 def get_weight():
