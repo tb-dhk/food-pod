@@ -126,7 +126,7 @@ def get_weight():
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"/home/pi/foodpod/{timestamp}.jpg"
-    command = ["raspistill", "-o", filename, "--vflip", "-n"]
+    command = ["libcamera-still", "-o", filename, "--vflip", "-n"]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"\nPicture taken and saved as {filename}\n")
     log_message("Waiting for weight change...")
