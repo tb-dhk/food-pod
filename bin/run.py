@@ -5,7 +5,7 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 import cv2
 import os
-import json
+import numpy as np
 from ultralytics import YOLO
 
 # Initialize GPIO
