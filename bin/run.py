@@ -172,13 +172,17 @@ def monitor_weight():
                 # Generate a difference image between the two latest pictures
                 diff_image = find_differences(pics[0], pics[1])
                 
-                # Create a copy of the second picture to overlay differences
+                # Load the second picture to overlay differences
                 image_with_diffs = cv2.imread(pics[1])
                 
                 # Apply the difference mask to the second picture
-                image_with_diffs[diff_image != 0] = [0, 0, 255]  # Mark differences in red (BGR format)
+                image_with_diffs[diff_image != 0] = image_with_diffs[diff_image != 0] * 0.5 + [0, 0, 255] * 0.5  # Blend with red (BGR format)
                 
-                # Save the image with highlighted differences
+                # Display or save the image with highlighted differences
+                cv2.imshow('Image with Differences', image_with_diffs)
+                cv2.waitKey(0)  # Wait for any key press to close the window
+                
+                # Optionally save the modified image
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 cv2.imwrite(f"/home/pi/food-pod/{timestamp}-diff.jpg", image_with_diffs)
                 
