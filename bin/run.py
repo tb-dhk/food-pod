@@ -149,7 +149,7 @@ def find_differences(image1_path, image2_path):
     return thresh
 
 def detect_food(image_path):
-    model_weights = "runs/detect/train/weights/best.pt"
+    model_weights = "../model/models/yolo_v8_v0.2.pt"
     model = YOLO(model_weights)
     results = model(image_path)
     for result in results:
