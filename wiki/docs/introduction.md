@@ -2,7 +2,7 @@
 
 ## the food:pod project
 
-the food:pod project is a collaborative effort by students from hwa chong institution aimed at tackling food wastage through innovative technology. it comprises three main components: the app, the bin, and the ai model.
+the food:pod project is a collaborative effort by students from hwa chong institution aimed at tackling food wastage through innovative technology. it comprises three main components: a smart bin, a mobile app and an image recognition model.
 
 ## components
 

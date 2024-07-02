@@ -1,1 +1,0 @@
-import{_ as t,c as e,o as a,a1 as o}from"./chunks/framework.BlQvpcPN.js";const b=JSON.parse('{"title":"the food:pod smart bin","description":"","frontmatter":{},"headers":[],"relativePath":"bin.md","filePath":"bin.md"}'),n={name:"bin.md"},i=o("",4),s=[i];function r(d,c,p,h,_,m){return a(),e("div",null,s)}const f=t(n,[["render",r]]);export{b as __pageData,f as default};
