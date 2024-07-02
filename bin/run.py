@@ -140,9 +140,7 @@ def get_latest_pictures(directory, num_pictures=2):
     files = sorted([os.path.join(directory, f) for f in os.listdir(directory) if f.endswith(".jpg")], key=os.path.getmtime, reverse=True)
     return files[:num_pictures]
 
-def find_differences(image1_path, image2_path):
-    image1 = cv2.imread(image1_path)
-    image2 = cv2.imread(image2_path)
+def find_differences(image1, image2):
     diff = cv2.absdiff(image1, image2)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
