@@ -129,7 +129,7 @@ def get_weight():
 
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"/home/pi/food-pod/{timestamp}.jpg"
+    filename = f"images/{timestamp}.jpg"
     command = ["libcamera-still", "-o", filename, "--vflip", "-n"]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"Picture taken and saved as {filename}")
@@ -164,7 +164,7 @@ def monitor_weight():
         
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
             new_pic = take_picture()
-            pics = get_latest_pictures("/home/pi/food-pod")
+            pics = get_latest_pictures("images")
             
             if len(pics) >= 2:
                 # Load the two latest pictures
@@ -184,10 +184,10 @@ def monitor_weight():
                 
                 # Optionally save the image with only the different pixels
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                cv2.imwrite(f"/home/pi/food-pod/{timestamp}-diff.jpg", diff_pixels)
+                cv2.imwrite(f"images/{timestamp}-diff.jpg", diff_pixels)
                 
                 # Detect food based on the image with only the different pixels
-                detect_food(f"/home/pi/food-pod/{timestamp}-diff.jpg")
+                detect_food(f"images/{timestamp}-diff.jpg")
             else:
                 # If less than two pictures are available, just detect food in the new picture
                 detect_food(new_pic)
