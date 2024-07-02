@@ -159,6 +159,7 @@ def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
     log_message("\nWaiting for weight change...")
+    
     while True:
         log_message(f"\rWaiting for weight change (now {prev_weight/17145})...")
         current_weight = get_weight()
@@ -166,15 +167,36 @@ def monitor_weight():
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
             new_pic = take_picture()
             pics = get_latest_pictures("/home/pi/food-pod")
+            
             if len(pics) >= 2:
+                # Generate a difference image between the two latest pictures
                 diff_image = find_differences(pics[0], pics[1])
-                cv2.imwrite("/home/pi/food-pod/diff.jpg", diff_image)
-                detect_food("/home/pi/food-pod/diff.jpg")
+                
+                # Create a copy of the second picture to overlay differences
+                image_with_diffs = cv2.imread(pics[1])
+                
+                # Apply the difference mask to the second picture
+                image_with_diffs[diff_image != 0] = [0, 0, 255]  # Mark differences in red (BGR format)
+                
+                # Save the image with highlighted differences
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                cv2.imwrite(f"/home/pi/food-pod/{timestamp}-diff.jpg", image_with_diffs)
+                
+                # Detect food based on the image with highlighted differences
+                detect_food(f"/home/pi/food-pod/{timestamp}-diff.jpg")
             else:
+                # If less than two pictures are available, just detect food in the new picture
                 detect_food(new_pic)
+            
             prev_weight = current_weight
         
         time.sleep(1)
+
+# Assuming get_weight(), log_message(), take_picture(), get_latest_pictures(), 
+# find_differences(), and detect_food() functions are defined elsewhere.
+
+# Example usage:
+monitor_weight()
 
 if __name__ == "__main__":
     zero_scale()  # Tare the scale to zero
