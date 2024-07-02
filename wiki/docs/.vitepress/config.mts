@@ -26,6 +26,5 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/tb-dhk/food-pod' } // updated github link
     ]
-  },
-  base: "/food-pod/"
+  }
 })

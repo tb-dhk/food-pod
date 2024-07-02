@@ -1,1 +1,0 @@
-import{_ as o,c as e,o as t,a1 as a}from"./chunks/framework.C46D9NsM.js";const f=JSON.parse('{"title":"the food:pod mobile app","description":"","frontmatter":{},"headers":[],"relativePath":"app.md","filePath":"app.md"}'),p={name:"app.md"},i=a("",4),n=[i];function r(d,s,c,l,h,_){return t(),e("div",null,n)}const b=o(p,[["render",r]]);export{f as __pageData,b as default};
