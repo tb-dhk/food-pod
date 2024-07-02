@@ -129,7 +129,7 @@ def get_weight():
 
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"/home/pi/foodpod/{timestamp}.jpg"
+    filename = f"/home/pi/food-pod/{timestamp}.jpg"
     command = ["libcamera-still", "-o", filename, "--vflip", "-n"]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"Picture taken and saved as {filename}")
@@ -165,11 +165,11 @@ def monitor_weight():
         
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
             new_pic = take_picture()
-            pics = get_latest_pictures("/home/pi/foodpod")
+            pics = get_latest_pictures("/home/pi/food-pod")
             if len(pics) >= 2:
                 diff_image = find_differences(pics[0], pics[1])
-                cv2.imwrite("/home/pi/foodpod/diff.jpg", diff_image)
-                detect_food("/home/pi/foodpod/diff.jpg")
+                cv2.imwrite("/home/pi/food-pod/diff.jpg", diff_image)
+                detect_food("/home/pi/food-pod/diff.jpg")
             else:
                 detect_food(new_pic)
             prev_weight = current_weight
