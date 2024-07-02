@@ -175,8 +175,7 @@ def monitor_weight():
                 diff_mask = find_differences(image1, image2)
                 
                 # Get only the pixels that are different in image2
-                diff_pixels = np.zeros_like(image2)
-                diff_pixels[diff_mask != 0] = image2[diff_mask != 0]
+                diff_pixels = cv2.bitwise_and(image2, image2, mask=diff_mask)
                 
                 # Display or save the image with only the different pixels
                 cv2.imshow('Image with Different Pixels', diff_pixels)
@@ -195,7 +194,6 @@ def monitor_weight():
             prev_weight = current_weight
         
         time.sleep(1)
-
 # Assuming get_weight(), log_message(), take_picture(), get_latest_pictures(), 
 # find_differences(), and detect_food() functions are defined elsewhere.
 
