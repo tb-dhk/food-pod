@@ -169,24 +169,26 @@ def monitor_weight():
             pics = get_latest_pictures("/home/pi/food-pod")
             
             if len(pics) >= 2:
-                # Generate a difference image between the two latest pictures
-                diff_image = find_differences(pics[0], pics[1])
+                # Load the two latest pictures
+                image1 = cv2.imread(pics[0])
+                image2 = cv2.imread(pics[1])
                 
-                # Load the second picture to overlay differences
-                image_with_diffs = cv2.imread(pics[1])
+                # Find the difference mask
+                diff_mask = find_differences(image1, image2)
                 
-                # Apply the difference mask to the second picture
-                image_with_diffs[diff_image != 0] = image_with_diffs[diff_image != 0] * 0.5 + [0, 0, 255] * 0.5  # Blend with red (BGR format)
+                # Get only the pixels that are different in image2
+                diff_pixels = np.zeros_like(image2)
+                diff_pixels[diff_mask != 0] = image2[diff_mask != 0]
                 
-                # Display or save the image with highlighted differences
-                cv2.imshow('Image with Differences', image_with_diffs)
+                # Display or save the image with only the different pixels
+                cv2.imshow('Image with Different Pixels', diff_pixels)
                 cv2.waitKey(0)  # Wait for any key press to close the window
                 
-                # Optionally save the modified image
+                # Optionally save the image with only the different pixels
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                cv2.imwrite(f"/home/pi/food-pod/{timestamp}-diff.jpg", image_with_diffs)
+                cv2.imwrite(f"/home/pi/food-pod/{timestamp}-diff.jpg", diff_pixels)
                 
-                # Detect food based on the image with highlighted differences
+                # Detect food based on the image with only the different pixels
                 detect_food(f"/home/pi/food-pod/{timestamp}-diff.jpg")
             else:
                 # If less than two pictures are available, just detect food in the new picture
@@ -200,13 +202,10 @@ def monitor_weight():
 # find_differences(), and detect_food() functions are defined elsewhere.
 
 # Example usage:
-monitor_weight()
+zero_scale()  # Tare the scale to zero
+log_message("Starting weight monitoring...\n")
 
-if __name__ == "__main__":
-    zero_scale()  # Tare the scale to zero
-    log_message("Starting weight monitoring...\n")
-    
-    try:
-        monitor_weight()
-    except (KeyboardInterrupt, SystemExit):
-        clean_and_exit()
+try:
+    monitor_weight()
+except (KeyboardInterrupt, SystemExit):
+    clean_and_exit()
