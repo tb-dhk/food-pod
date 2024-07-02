@@ -3,6 +3,10 @@ import time
 import sys
 from datetime import datetime
 import RPi.GPIO as GPIO
+import cv2
+import os
+import json
+from ultralytics import YOLO
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
@@ -130,22 +134,47 @@ def take_picture():
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"Picture taken and saved as {filename}")
     log_message("Waiting for weight change...")
+    return filename
+
+def get_latest_pictures(directory, num_pictures=2):
+    files = sorted([os.path.join(directory, f) for f in os.listdir(directory) if f.endswith(".jpg")], key=os.path.getmtime, reverse=True)
+    return files[:num_pictures]
+
+def find_differences(image1_path, image2_path):
+    image1 = cv2.imread(image1_path)
+    image2 = cv2.imread(image2_path)
+    diff = cv2.absdiff(image1, image2)
+    gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
+    return thresh
+
+def detect_food(image_path):
+    model_weights = "runs/detect/train/weights/best.pt"
+    model = YOLO(model_weights)
+    results = model(image_path)
+    for result in results:
+        result.show()
 
 def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
     log_message("\nWaiting for weight change...")
-    x = 0
     while True:
-        log_message(f"\rWaiting for weight change (now {prev_weight/17145}, {x} times)...")
+        log_message(f"\rWaiting for weight change (now {prev_weight/17145})...")
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
-            take_picture()
+            new_pic = take_picture()
+            pics = get_latest_pictures("/home/pi/foodpod")
+            if len(pics) >= 2:
+                diff_image = find_differences(pics[0], pics[1])
+                cv2.imwrite("/home/pi/foodpod/diff.jpg", diff_image)
+                detect_food("/home/pi/foodpod/diff.jpg")
+            else:
+                detect_food(new_pic)
             prev_weight = current_weight
         
         time.sleep(1)
-        x += 1
 
 if __name__ == "__main__":
     zero_scale()  # Tare the scale to zero
@@ -155,4 +184,3 @@ if __name__ == "__main__":
         monitor_weight()
     except (KeyboardInterrupt, SystemExit):
         clean_and_exit()
-
