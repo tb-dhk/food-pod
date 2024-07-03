@@ -144,7 +144,12 @@ def find_differences(image1, image2):
     diff = cv2.absdiff(image1, image2)
     gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
     _, thresh = cv2.threshold(gray, 30, 255, cv2.THRESH_BINARY)
-    return thresh
+    
+    # Create an image to hold only the different pixels from image2
+    diff_pixels = np.zeros_like(image2)
+    diff_pixels[thresh != 0] = image2[thresh != 0]
+    
+    return diff_pixels
 
 def detect_food(image_path):
     model_weights = "../model/models/yolo_v8_v0.2.pt"
