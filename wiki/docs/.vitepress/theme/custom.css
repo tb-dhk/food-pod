@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Comfortaa';
+    src: url('fonts/Comfortaa-Regular.eot'), url('./Comforta-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
-  --vp-font-family-base: "Comfortaa" 
+  --vp-font-family-base: "Comfortaa", "Inter", sans-serif 
 }
