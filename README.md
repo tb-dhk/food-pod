@@ -21,3 +21,42 @@ the food:pod project is a collaborative effort by students from hwa chong instit
 
 the project aims to harness technology to promote mindful consumption and reduce food wastage by providing users with real-time data and insights.
 
+### checklist
+- [ ] bin
+  - [x] weight detection
+  - [x] picture taking
+  - [x] picture comparison
+  - [ ] food detection
+  - [ ] weight estimation
+  - [ ] database upload
+- [ ] app
+  - [ ] design
+    - [x] logo
+    - [x] font
+    - [ ] dark mode
+    - [ ] vector graphics 
+  - [ ] pages
+    - [ ] trends
+    - [ ] live
+    - [ ] logs
+    - [ ] settings
+- [ ] model
+  - [x] online image data
+    - [x] popcorn chicken
+    - [x] french fries
+    - [x] baked beans
+    - [x] rice
+  - [ ] bin data
+- [ ] wiki
+  - [ ] homepage
+    - [x] title
+    - [x] summaries
+    - [x] picture
+    - [ ] logo (title)
+    - [ ] logos (summaries)
+  - [ ] pages
+    - [x] introduction
+    - [ ] smart bin
+    - [ ] mobile app
+    - [x] image recognition model
+    - [x] credits
