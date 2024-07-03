@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap');
 
 :root {
-  --vp-font-family-base: "Comfortaa", "Inter", sans-serif 
+  --vp-font-family-base: "Comfortaa", "Inter", sans-serif;
+  --vp-home-hero-name-color: #08d1d0;
+  --vp-c-brand-1: #0cc;
+  --vp-c-brand-2: #0cc;
+  --vp-c-brand-3: #0cc;
 }

@@ -5,12 +5,15 @@ layout: home
 hero:
   name: "the food:pod wiki"
   text: "official wiki of the food:pod project"
+  image: 
+    src: /logo_horizontal_dark.png
+    alt: logo
   actions:
     - theme: brand
       text: get started 
       link: /introduction
     - theme: alt
-      text: see the food:pod project on github
+      text: see the project on github
       link: https://github.com/tb-dhk/food-pod
 
 features:
