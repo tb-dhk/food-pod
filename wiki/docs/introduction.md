@@ -9,10 +9,10 @@ the food:pod project is a collaborative effort by students from hwa chong instit
 - **food:pod**: a smart food waste bin utilizing image recognition to identify and weigh deposited food items, integrating with the ai model for waste analysis and tracking.
   [learn more](bin).
 
-- **food:pod app**: manages user interaction, offering insights and recommendations based on data from the food bin.
+- **food:pod app**: a mobile app that manages user interaction, offering insights and recommendations based on data from the food bin.
   [learn more](app).
 
-- **food:pod image recognition model**: trained to detect and quantify food waste, using machine learning to enhance accuracy over time.
+- **food:pod image recognition model**: an image recognition model trained to detect and quantify food waste, using machine learning to enhance accuracy over time.
   [learn more](model).
 
 ## purpose
