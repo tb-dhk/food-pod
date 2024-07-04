@@ -23,10 +23,8 @@ the project aims to harness technology to promote mindful consumption and reduce
 
 ### checklist
 - [ ] bin
-  - [x] weight detection
+  - [ ]  light detection
   - [x] picture taking
-  - [x] picture comparison
-  - [ ] bottom detection
   - [x] food detection
   - [x] weight estimation
   - [ ] database upload
