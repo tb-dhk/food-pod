@@ -5,3 +5,4 @@ imgaug
 RPi.GPIO  # Library for accessing Raspberry Pi GPIO pins
 hx711      # Library for HX711 load cell amplifier
 opencv-python
+dill

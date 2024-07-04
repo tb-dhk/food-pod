@@ -122,7 +122,7 @@ def zero_scale():
 
 def get_weight():
     try:
-        weight = hx.get_units(5)
+        weight = hx.ge_units(5)
         return weight
     except (KeyboardInterrupt, SystemExit):
         clean_and_exit()
@@ -134,10 +134,9 @@ def take_picture():
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"Picture taken and saved as {filename}")
     log_message("Waiting for weight change...")
-    return filename
 
 def get_latest_pictures(directory, num_pictures=2):
-    files = sorted([os.path.join(directory, f) for f in os.listdir(directory) if f.endswith(".jpg")], key=os.path.getmtime, reverse=True)
+    files = sorted([os.path.join(directory, f) for f in os.listdir(directory) if f.endswith(".jpg") and "-diff" not in f], key=os.path.getmtime, reverse=True)
     return files[:num_pictures]
 
 def find_differences(image1, image2):
@@ -155,8 +154,8 @@ def detect_food(image_path):
     model_weights = "../model/models/yolo_v8_v0.2.pt"
     model = YOLO(model_weights)
     results = model(image_path)
-    for result in results:
-        result.show()
+    result.save(filename=image_path.split(".")[0] + "-detected.jpg")
+    return results[0].boxes
 
 def monitor_weight():
     prev_weight = get_weight()
@@ -168,45 +167,34 @@ def monitor_weight():
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
-            new_pic = take_picture()
-            pics = get_latest_pictures("images")
-            
+            pics = get_latest_pictures("images") 
             if len(pics) >= 2:
-                # Load the two latest pictures
-                image1 = cv2.imread(pics[0])
-                image2 = cv2.imread(pics[1])
+                log_message(f"Found {len(pics)} latest pictures.")
+                image1 = cv2.imread(pics[1])
+                image2 = cv2.imread(pics[0])
                 
-                # Find the difference mask
+                log_message(f"Calculating difference mask between {pics[0]} and {pics[1]}...")
                 diff_mask = find_differences(image1, image2)
                 
-                # Get only the pixels that are different in image2
-                diff_pixels = cv2.bitwise_and(image2, image2, mask=diff_mask)
-                
-                # Display or save the image with only the different pixels
-                cv2.imshow('Image with Different Pixels', diff_pixels)
-                cv2.waitKey(0)  # Wait for any key press to close the window
-                
-                # Optionally save the image with only the different pixels
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                cv2.imwrite(f"images/{timestamp}-diff.jpg", diff_pixels)
+                diff_filename = f"images/{timestamp}-diff.jpg"
+                cv2.imwrite(diff_filename, diff_mask)
                 
-                # Detect food based on the image with only the different pixels
-                detect_food(f"images/{timestamp}-diff.jpg")
+                log_message(f"Detecting food from differences image ({diff_filename})...")
+                results = detect_food(diff_filename)
             else:
-                # If less than two pictures are available, just detect food in the new picture
-                detect_food(new_pic)
+                log_message("Less than two pictures available, detecting food from new picture...")
+                detect_food(cv2.imread(pics[0]))
             
             prev_weight = current_weight
         
         time.sleep(1)
-# Assuming get_weight(), log_message(), take_picture(), get_latest_pictures(), 
-# find_differences(), and detect_food() functions are defined elsewhere.
 
-# Example usage:
-zero_scale()  # Tare the scale to zero
+zero_scale() 
 log_message("Starting weight monitoring...\n")
 
 try:
     monitor_weight()
 except (KeyboardInterrupt, SystemExit):
     clean_and_exit()
+
