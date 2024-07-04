@@ -7,6 +7,7 @@ import cv2
 import os
 import numpy as np
 from ultralytics import YOLO
+import pyodbc
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
@@ -151,11 +152,30 @@ def find_differences(image1, image2):
     return diff_pixels
 
 def detect_food(image_path):
-    model_weights = "../model/models/yolo_v8_v0.2.pt"
+    model_weights = "../model/models/food_detection/yolo_v8_v0.2.pt"
     model = YOLO(model_weights)
     results = model(image_path)
-    result.save(filename=image_path.split(".")[0] + "-detected.jpg")
+    results[0].save(filename=image_path.split(".")[0] + "-detected.jpg")
     return results[0].boxes
+
+def convert_results_to_area_dict(results):
+    area_dict = {}
+
+    # Iterate over the range of boxes
+    for i in range(len(results[0].boxes.xyxy)):
+        cls = int(results[0].boxes.cls[i].item())  # Extract the class ID as an integer
+        xyxy = results[0].boxes.xyxy[i].detach().cpu().numpy()  # Extract bounding box coordinates
+
+        # Calculate area of the bounding box
+        area = (xyxy[2] - xyxy[0]) * (xyxy[3] - xyxy[1])
+
+        # Accumulate the area for the corresponding class ID
+        if cls in area_dict:
+            area_dict[cls] += area
+        else:
+            area_dict[cls] = area
+
+    return area_dict
 
 def monitor_weight():
     prev_weight = get_weight()
@@ -166,7 +186,7 @@ def monitor_weight():
         log_message(f"\rWaiting for weight change (now {prev_weight/17145})...")
         current_weight = get_weight()
         
-        if abs(current_weight - prev_weight) > 0.01:  # Adjust the threshold as needed
+        if abs(current_weight - prev_weight) > 0.1:  # Adjust the threshold as needed
             pics = get_latest_pictures("images") 
             if len(pics) >= 2:
                 log_message(f"Found {len(pics)} latest pictures.")
@@ -184,7 +204,33 @@ def monitor_weight():
                 results = detect_food(diff_filename)
             else:
                 log_message("Less than two pictures available, detecting food from new picture...")
-                detect_food(cv2.imread(pics[0]))
+                results = detect_food(cv2.imread(pics[0]))
+
+            server = 'food-pod.database.windows.net'
+            database = 'food-pod'
+            username = 'foodpod'
+            password = 'your_password'
+            driver= '{ODBC Driver 17 for SQL Server}'
+            cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+            cursor = cnxn.cursor()
+
+            results = convert_results_to_area_dict(results)
+
+            for cls in results:
+                # Step 1: Query the Food table to find density of food given id
+                cursor.execute(f"SELECT density FROM Food WHERE id = {cls}")
+                row = cursor.fetchone()
+                if row:
+                    density = float(row[0])
+                    results[cls] = density  # Update the dictionary value to density
+                else:
+                    results[cls] = None  # Handle case where density is not found for the given class ID
+
+                # Print or use results as needed
+                print(f"Class {cls}: Density = {results[cls]}")
+            
+            # Step 5: Close database connection
+            cnxn.close()
             
             prev_weight = current_weight
         
