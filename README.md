@@ -28,7 +28,7 @@ the project aims to harness technology to promote mindful consumption and reduce
   - [x] picture comparison
   - [ ] bottom detection
   - [x] food detection
-  - [ ] weight estimation
+  - [x] weight estimation
   - [ ] database upload
 - [ ] app
   - [ ] design
