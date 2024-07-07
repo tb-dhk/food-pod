@@ -152,7 +152,7 @@ def find_differences(image1, image2):
     return diff_pixels
 
 def detect_food(image_path):
-    model_weights = "../model/models/food_detection/yolo_v8_v0.2.pt"
+    model_weights = "../model/models/food-detection/yolo_v8_v0.2.pt"
     model = YOLO(model_weights)
     results = model(image_path)
     results[0].save(filename=image_path.split(".")[0] + "-detected.jpg")
