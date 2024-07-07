@@ -234,9 +234,6 @@ def monitor_weight():
                         density = float(row[0])
                         area = results[cls]
                         height = 2  # average height of food in cm
-                        if cls == <rice_class_id>:  # Replace <rice_class_id> with the actual class id for rice
-                            height = 1.5  # specific height for rice
-                        
                         # Calculate the raw weight for this food item
                         raw_weight = area * height * density
                         raw_weights_dict[cls] = raw_weight
