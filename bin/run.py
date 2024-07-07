@@ -185,7 +185,7 @@ def monitor_weight():
     time.sleep(1)  # Initial delay to allow for any transient readings
     
     while True:
-        log_message(f"Waiting for weight change (now {prev_weight})...")
+        log_message(f"Waiting for weight change (now {prev_weight * 1000000})...")
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 100000:  # Adjust the threshold as needed
