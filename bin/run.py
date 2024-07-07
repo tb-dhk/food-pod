@@ -183,13 +183,12 @@ def convert_results_to_area_dict(boxes):
 def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
-    log_message("Waiting for weight change...")
     
     while True:
         log_message(f"Waiting for weight change (now {prev_weight})...")
         current_weight = get_weight()
         
-        if abs(current_weight - prev_weight) > 0.1:  # Adjust the threshold as needed
+        if abs(current_weight - prev_weight) > 100000:  # Adjust the threshold as needed
             weight_change = current_weight - prev_weight  # Calculate the change in weight
             
             pics = get_latest_pictures("images") 
