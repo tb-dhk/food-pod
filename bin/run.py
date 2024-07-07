@@ -111,18 +111,18 @@ hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"\r[{log_time}] {message.lower()}")
+    print(f"[{log_time}] {message.lower()}")
 
 def clean_and_exit():
     log_message("Cleaning...")
     GPIO.cleanup()
-    log_message("Bye!\n")
+    log_message("Bye!")
     sys.exit()
 
 def zero_scale():
     log_message("Taring scale...")
     hx.tare()  # Tare the HX711
-    log_message("Tare done!\n")
+    log_message("Tare done!")
 
 def get_weight():
     try:
@@ -183,15 +183,14 @@ def convert_results_to_area_dict(boxes):
 def monitor_weight():
     prev_weight = get_weight()
     time.sleep(1)  # Initial delay to allow for any transient readings
-    log_message("\nWaiting for weight change...")
+    log_message("Waiting for weight change...")
     
     while True:
-        log_message(f"\rWaiting for weight change (now {prev_weight})...")
+        log_message(f"Waiting for weight change (now {prev_weight})...")
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 0.1:  # Adjust the threshold as needed
             weight_change = current_weight - prev_weight  # Calculate the change in weight
-            print(current_weight, prev_weight, weight_change)
             
             pics = get_latest_pictures("images") 
             if len(pics) >= 2:
@@ -252,7 +251,7 @@ def monitor_weight():
             prev_weight = current_weight
         
 zero_scale() 
-log_message("Starting weight monitoring...\n")
+log_message("Starting weight monitoring...")
 
 try:
     monitor_weight()
@@ -260,7 +259,7 @@ except (KeyboardInterrupt, SystemExit):
     clean_and_exit()
         
 zero_scale() 
-log_message("Starting weight monitoring...\n")
+log_message("Starting weight monitoring...")
 
 try:
     monitor_weight()
