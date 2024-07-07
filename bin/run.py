@@ -193,7 +193,6 @@ def monitor_weight():
             
             pics = get_latest_pictures("images") 
             if len(pics) >= 2:
-                print(weight_change)
                 log_message(f"Found {len(pics)} latest pictures.")
                 image1 = cv2.imread(pics[1])
                 image2 = cv2.imread(pics[0])
