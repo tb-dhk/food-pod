@@ -10,7 +10,7 @@ from ultralytics import YOLO
 import pyodbc
 import dotenv
 
-dotenv.load_dotenv()
+dotenv.load_dotenv(".env")
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
