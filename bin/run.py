@@ -162,6 +162,7 @@ def detect_food(image_path):
     return results[0].boxes
 
 def convert_results_to_area_dict(results):
+    print(results)
     area_dict = {}
 
     # Iterate over the range of boxes
@@ -216,7 +217,6 @@ def monitor_weight():
             username = 'foodpod'
             password = os.getenv("SQL_PASSWORD")
             driver = '{ODBC Driver 18 for SQL Server}'
-            print(server, database, username, password, driver)
             cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
             
             with cnxn:
