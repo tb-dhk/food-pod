@@ -110,7 +110,7 @@ class HX711:
 hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
 
 def log_message(message):
-    log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
     print(f"[{log_time}] {message.lower()}")
 
 def clean_and_exit():
