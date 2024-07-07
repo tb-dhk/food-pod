@@ -161,14 +161,13 @@ def detect_food(image_path):
     results[0].save(filename=image_path.split(".")[0] + "-detected.jpg")
     return results[0].boxes
 
-def convert_results_to_area_dict(results):
-    print(results)
+def convert_results_to_area_dict(boxes):
     area_dict = {}
 
     # Iterate over the range of boxes
-    for i in range(len(results[0].boxes.xyxy)):
-        cls = int(results[0].boxes.cls[i].item())  # Extract the class ID as an integer
-        xyxy = results[0].boxes.xyxy[i].detach().cpu().numpy()  # Extract bounding box coordinates
+    for i in range(len(boxes.xyxy)):
+        cls = int(boxes.cls[i].item())  # Extract the class ID as an integer
+        xyxy = boxes.xyxy[i].detach().cpu().numpy()  # Extract bounding box coordinates
 
         # Calculate area of the bounding box
         area = (xyxy[2] - xyxy[0]) * (xyxy[3] - xyxy[1])
