@@ -191,6 +191,7 @@ def monitor_weight():
         
         if abs(current_weight - prev_weight) > 0.1:  # Adjust the threshold as needed
             weight_change = current_weight - prev_weight  # Calculate the change in weight
+            print(current_weight, prev_weight, weight_change)
             
             pics = get_latest_pictures("images") 
             if len(pics) >= 2:
