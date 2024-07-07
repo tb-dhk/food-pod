@@ -10,6 +10,8 @@ from ultralytics import YOLO
 import pyodbc
 import dotenv
 
+load.dotenv()
+
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -212,7 +214,7 @@ def monitor_weight():
             server = 'food-pod.database.windows.net'
             database = 'food-pod'
             username = 'foodpod'
-            password = dotenv.dotenv_values("SQL_PASSWORD")
+            password = os.getenv("SQL_PASSWORD")
             driver= '{ODBC Driver 17 for SQL Server}'
             cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
             
