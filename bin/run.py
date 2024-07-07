@@ -108,7 +108,7 @@ hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"\r[{log_time}] {message}")
+    print(f"\r[{log_time}] {message.lower()}")
 
 def clean_and_exit():
     log_message("Cleaning...")
@@ -123,7 +123,7 @@ def zero_scale():
 
 def get_weight():
     try:
-        weight = hx.ge_units(5)
+        weight = hx.get_units(5)
         return weight
     except (KeyboardInterrupt, SystemExit):
         clean_and_exit()
@@ -187,6 +187,8 @@ def monitor_weight():
         current_weight = get_weight()
         
         if abs(current_weight - prev_weight) > 0.1:  # Adjust the threshold as needed
+            weight_change = current_weight - prev_weight  # Calculate the change in weight
+            
             pics = get_latest_pictures("images") 
             if len(pics) >= 2:
                 log_message(f"Found {len(pics)} latest pictures.")
@@ -212,30 +214,50 @@ def monitor_weight():
             password = 'your_password'
             driver= '{ODBC Driver 17 for SQL Server}'
             cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
-            cursor = cnxn.cursor()
-
-            results = convert_results_to_area_dict(results)
-
-            for cls in results:
-                # Step 1: Query the Food table to find density of food given id
-                cursor.execute(f"SELECT density FROM Food WHERE id = {cls}")
-                row = cursor.fetchone()
-                if row:
-                    density = float(row[0])
-                    results[cls] = density  # Update the dictionary value to density
-                else:
-                    results[cls] = None  # Handle case where density is not found for the given class ID
-
-                # Print or use results as needed
-                print(f"Class {cls}: Density = {results[cls]}")
             
-            # Step 5: Close database connection
-            cnxn.close()
+            with cnxn:
+                cursor = cnxn.cursor()
+
+                results = convert_results_to_area_dict(results)
+
+                total_area = sum(results.values())
+                total_weight = weight_change  # Assume this is the weight change in grams
+                
+                raw_weights_dict = {}
+                total_raw_weight = 0
+
+                for cls in results:
+                    # Step 1: Query the Food table to find density of food given id
+                    cursor.execute(f"SELECT density FROM Food WHERE id = {cls}")
+                    row = cursor.fetchone()
+                    if row:
+                        density = float(row[0])
+                        area = results[cls]
+                        height = 2  # average height of food in cm
+                        if cls == <rice_class_id>:  # Replace <rice_class_id> with the actual class id for rice
+                            height = 1.5  # specific height for rice
+                        
+                        # Calculate the raw weight for this food item
+                        raw_weight = area * height * density
+                        raw_weights_dict[cls] = raw_weight
+                        total_raw_weight += raw_weight
+                    else:
+                        raw_weights_dict[cls] = None  # Handle case where density is not found for the given class ID
+
+                # Distribute the total weight change proportionally
+                weights_dict = {cls: (raw_weights_dict[cls] / total_raw_weight) * total_weight if raw_weights_dict[cls] is not None else 0 for cls in raw_weights_dict}
+                log_message(f"obtained results: {weights_dict}")
             
             prev_weight = current_weight
         
-        time.sleep(1)
+zero_scale() 
+log_message("Starting weight monitoring...\n")
 
+try:
+    monitor_weight()
+except (KeyboardInterrupt, SystemExit):
+    clean_and_exit()
+        
 zero_scale() 
 log_message("Starting weight monitoring...\n")
 
