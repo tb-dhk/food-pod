@@ -246,6 +246,23 @@ def monitor_weight():
                 # Distribute the total weight change proportionally
                 weights_dict = {cls: (raw_weights_dict[cls] / total_raw_weight) * total_weight if raw_weights_dict[cls] is not None else 0 for cls in raw_weights_dict}
                 log_message(f"obtained results: {weights_dict}")
+
+                # Insert the log into the Logs table
+                log_id = datetime.now().strftime("%Y%m%d%H%M%S")
+                time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                bin_id = 1  # Example bin ID, change as needed
+                picture_of_bin = pics[0]
+                filtered_picture_of_new_food = diff_filename
+                dictionary_of_estimated_amts_of_food = json.dumps(weights_dict)
+                change_in_weight = total_weight
+
+                cursor.execute("""
+                    INSERT INTO Logs (id, time, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """, (log_id, time_now, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight))
+
+                cnxn.commit()
+                log_message("Log entry added to the database.")
             
             prev_weight = current_weight
         
@@ -256,12 +273,3 @@ try:
     monitor_weight()
 except (KeyboardInterrupt, SystemExit):
     clean_and_exit()
-        
-zero_scale() 
-log_message("Starting weight monitoring...")
-
-try:
-    monitor_weight()
-except (KeyboardInterrupt, SystemExit):
-    clean_and_exit()
-
