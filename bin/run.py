@@ -238,32 +238,30 @@ def monitor_weight():
                         height = 2  # average height of food in cm
                         # Calculate the raw weight for this food item
                         raw_weight = area * height * density
-                        raw_weights_dict[cls] = raw_weight
                         total_raw_weight += raw_weight
-                    else:
-                        raw_weights_dict[cls] = None  # Handle case where density is not found for the given class ID
+                        raw_weights_dict[cls] = raw_weight
 
-                # Distribute the total weight change proportionally
-                weights_dict = {cls: (raw_weights_dict[cls] / total_raw_weight) * total_weight if raw_weights_dict[cls] is not None else 0 for cls in raw_weights_dict}
-                log_message(f"obtained results: {weights_dict}")
+                # Calculate the conversion factor for raw weights to match the total weight change
+                conversion_factor = total_weight / total_raw_weight if total_raw_weight else 0
+
+                # Apply the conversion factor to adjust raw weights
+                adjusted_weights_dict = {cls: weight * conversion_factor for cls, weight in raw_weights_dict.items()}
+
+                log_message(f"results: {results}")
+                log_message(f"weights: {adjusted_weights_dict}")
+
+                pic_bin = pics[1]
+                pic_new = pics[0]
 
                 # Insert the log into the Logs table
-                log_id = datetime.now().strftime("%Y%m%d%H%M%S")
                 time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                bin_id = 1  # Example bin ID, change as needed
-                picture_of_bin = pics[0]
-                filtered_picture_of_new_food = diff_filename
-                dictionary_of_estimated_amts_of_food = json.dumps(weights_dict)
-                change_in_weight = total_weight
 
                 cursor.execute("""
-                    INSERT INTO Logs (id, time, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                """, (log_id, time_now, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight))
+                    INSERT INTO Logs (time, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (time_now, 1, pic_bin, pic_new, str(adjusted_weights_dict), weight_change))
+                cnxn.commit()     
 
-                cnxn.commit()
-                log_message("Log entry added to the database.")
-            
             prev_weight = current_weight
         
 zero_scale() 
