@@ -43,7 +43,8 @@ class HX711:
         self.set_gain(gain)
 
     def is_ready(self):
-        return GPIO.input(self.DOUT)
+        # The HX711 is ready when DOUT is low (0)
+        return GPIO.input(self.DOUT) == 0
 
     def set_gain(self, gain):
         if gain == 128:
@@ -56,32 +57,29 @@ class HX711:
         GPIO.output(self.PD_SCK, False)
         self.read()
 
-    def read(self, timeout=10):
-        start_time = time.time()
+    def read(self):
+        # Wait until HX711 is ready
         while not self.is_ready():
-            if time.time() - start_time > timeout:
-                raise TimeoutError("Operation timed out after 10 seconds")
-            time.sleep(0.1)  # Small sleep to prevent busy waiting
-        dataBits = [createBoolList(), createBoolList(), createBoolList()]
+            time.sleep(0.01)
 
-        for j in range(2, -1, -1):
-            for i in range(7, -1, -1):
-                GPIO.output(self.PD_SCK, True)
-                dataBits[j][i] = GPIO.input(self.DOUT)
-                GPIO.output(self.PD_SCK, False)
+        count = 0
+        GPIO.output(self.PD_SCK, False)
+        time.sleep(0.0001)
+        
+        # Read 24-bit data from HX711
+        for i in range(24):
+            GPIO.output(self.PD_SCK, True)
+            count = count << 1
+            GPIO.output(self.PD_SCK, False)
+            if GPIO.input(self.DOUT):
+                count += 1
 
+        # Set the channel and gain factor
         GPIO.output(self.PD_SCK, True)
+        count ^= 0x800000
         GPIO.output(self.PD_SCK, False)
 
-        if all(item == True for item in dataBits[0]):
-            return self.lastVal
-
-        bits = []
-        for i in range(2, -1, -1):
-            bits += dataBits[i]
-
-        self.lastVal = int(''.join(map(str, bits)), 2)
-        return self.lastVal
+        return count
 
     def read_average(self, times=3):
         sum = 0
