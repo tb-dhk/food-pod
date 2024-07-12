@@ -12,16 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "extra": {
-      "expo-google-fonts": {
-        "customFonts": {
-          "Comfortaa": {
-            "regular": "assets/fonts/Comfortaa-Regular.ttf",
-            "bold": "assets/fonts/Comfortaa-Bold.ttf"
-          }
-        }
-      }
-    },
     "ios": {
       "supportsTablet": true
     },

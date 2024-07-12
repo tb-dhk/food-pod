@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack } from "expo-router";
 import { View, Image, StyleSheet } from "react-native";
-import logo from "../assets/logo_horizontal.png"; // Ensure this is correct
+import logo from "../assets/images/logo_horizontal_light.png"; // Ensure this is correct
 
 export default function RootLayout() {
   return (
