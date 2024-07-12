@@ -39,7 +39,7 @@ class HX711:
         self.set_gain(gain)
 
     def is_ready(self):
-        return GPIO.input(self.DOUT) == 1
+        return GPIO.input(self.DOUT) == 0
 
     def set_gain(self, gain):
         if gain == 128:
