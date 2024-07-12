@@ -265,7 +265,7 @@ def monitor_weight():
                 cursor.execute("""
                     INSERT INTO Logs (time, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (time_now, 1, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change))
+                """, (time_now, 0, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change))
                 cnxn.commit()
 
             prev_weight = current_weight
