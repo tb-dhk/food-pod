@@ -68,10 +68,8 @@ class HX711:
             for i in range(7, -1, -1):
                 GPIO.output(self.PD_SCK, True)
                 dataBits[j][i] = GPIO.input(self.DOUT)
-                GPIO.output(self.PD_SCK, False)
 
         GPIO.output(self.PD_SCK, True)
-        GPIO.output(self.PD_SCK, False)
 
         if all(item == True for item in dataBits[0]):
             return self.lastVal
