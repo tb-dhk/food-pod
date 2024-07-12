@@ -52,10 +52,12 @@ class HX711:
         GPIO.output(self.PD_SCK, False)
         self.read()
 
-    def read(self):
+    def read(self, timeout=10):
+        start_time = time.time()
         while not self.is_ready():
-            pass
-
+            if time.time() - start_time > timeout:
+                raise TimeoutError("Operation timed out after 10 seconds")
+            time.sleep(0.1)  # Small sleep to prevent busy waiting
         dataBits = [createBoolList(), createBoolList(), createBoolList()]
 
         for j in range(2, -1, -1):
@@ -250,8 +252,12 @@ def monitor_weight():
                 log_message(f"results: {results}")
                 log_message(f"weights: {adjusted_weights_dict}")
 
-                pic_bin = pics[1]
-                pic_new = pics[0]
+                # Read the images as binary data
+                with open(pics[1], 'rb') as file:
+                    pic_bin = file.read()
+
+                with open(pics[0], 'rb') as file:
+                    pic_new = file.read()
 
                 # Insert the log into the Logs table
                 time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -259,8 +265,8 @@ def monitor_weight():
                 cursor.execute("""
                     INSERT INTO Logs (time, bin_id, picture_of_bin, filtered_picture_of_new_food, dictionary_of_estimated_amts_of_food, change_in_weight)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (time_now, 1, pic_bin, pic_new, str(adjusted_weights_dict), weight_change))
-                cnxn.commit()     
+                """, (time_now, 1, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change))
+                cnxn.commit()
 
             prev_weight = current_weight
         
