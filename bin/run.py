@@ -23,6 +23,10 @@ SCK_PIN = 6
 def createBoolList(size=8):
     return [False] * size
 
+def log_message(message):
+    log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    print(f"[{log_time}] {message.lower()}")
+
 class HX711:
     def __init__(self, dout, pd_sck, gain=128):
         self.PD_SCK = pd_sck
@@ -111,10 +115,6 @@ class HX711:
 
 # Initialize the HX711
 hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN)
-
-def log_message(message):
-    log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-    print(f"[{log_time}] {message.lower()}")
 
 def clean_and_exit():
     log_message("Cleaning...")
