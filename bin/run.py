@@ -217,7 +217,7 @@ def monitor_weight():
             username = 'foodpod'
             password = os.getenv("SQL_PASSWORD")
             driver = '{ODBC Driver 18 for SQL Server}'
-            cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
+            cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+',1433;DATABASE='+database+';UID='+username+';PWD='+ password)
             
             with cnxn:
                 cursor = cnxn.cursor()
