@@ -39,13 +39,6 @@ def zero_scale():
     hx.tare()  # Tare the HX711
     log_message("Tare done!")
 
-def get_weight():
-    try:
-        weight = hx.get_raw_data_mean(5)
-        return weight
-    except (KeyboardInterrupt, SystemExit):
-        clean_and_exit()
-
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"images/{timestamp}.jpg"
@@ -93,11 +86,11 @@ def convert_results_to_area_dict(boxes):
     return area_dict
 
 def monitor_weight():
-    prev_weight = get_weight()
+    prev_weight = hx.get_weight()
     time.sleep(1)
 
     while True:
-        current_weight = get_weight()
+        current_weight = hx.get_weight()
         weight_change = current_weight - prev_weight
         log_message(f"Waiting for weight change (now {prev_weight}) (change {weight_change})...")
         
