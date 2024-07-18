@@ -93,11 +93,8 @@ class HX711:
         log_message(f"reading done: {measurements} ({sum(measurements) / times})")
         return total / times
 
-    def get_value(self, times=3):
-        return self.read_average(times) - self.OFFSET
-
     def get_units(self, times=3):
-        return self.get_value(times) / self.SCALE
+        return self.read_average(times) / self.SCALE
 
     def tare(self, times=15):
         sum = self.read_average(times)
