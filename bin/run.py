@@ -26,7 +26,7 @@ def log_message(message):
     print(f"[{log_time}] {message.lower()}")
 
 # Initialize the HX711
-hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN, gain_channel_A=128, select_channel='A')
+hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN, gain=128)
 
 def clean_and_exit():
     log_message("Cleaning...")
