@@ -269,6 +269,8 @@ def monitor_weight():
                 cnxn.commit()
 
             prev_weight = current_weight
+
+        time.sleep(0.25)
         
 zero_scale() 
 log_message("Starting weight monitoring...")
