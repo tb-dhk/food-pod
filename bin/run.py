@@ -94,7 +94,7 @@ def monitor_weight():
         weight_change = current_weight - prev_weight
         log_message(f"Waiting for weight change (now {prev_weight}) (change {weight_change})...")
         
-        if abs(current_weight - prev_weight) > 100000:
+        if abs(weight_change) > 1000:
             pics = get_latest_pictures("images")
             if len(pics) >= 2:
                 log_message(f"Found {len(pics)} latest pictures.")
