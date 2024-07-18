@@ -90,7 +90,6 @@ class HX711:
             new = self.read()
             measurements.append(new)
             total += new
-        log_message(f"reading done: {measurements} ({total / times})")
         return total / times / self.SCALE
 
     def tare(self, times=15):
