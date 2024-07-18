@@ -18,8 +18,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 # Define the GPIO pins for the HX711
-DT_PIN = 17
-SCK_PIN = 27
+DT_PIN = 5 
+SCK_PIN = 6
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
