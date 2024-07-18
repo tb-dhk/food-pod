@@ -17,8 +17,8 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 # Define the GPIO pins for the HX711
-DT_PIN = 5
-SCK_PIN = 6
+DT_PIN = 17
+SCK_PIN = 27
 
 def createBoolList(size=8):
     return [False] * size
