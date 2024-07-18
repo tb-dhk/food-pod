@@ -89,6 +89,7 @@ class HX711:
         for i in range(times):
             new = self.read()
             measurements.append(new)
+            sum += new
         return sum / times
 
     def get_value(self, times=3):
