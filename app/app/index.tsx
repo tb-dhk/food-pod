@@ -8,7 +8,6 @@ import LiveView from './LiveView';
 import CreditsView from './CreditsView';
 
 const Tab = createBottomTabNavigator();
-
 export default function App() {
   return (
     <NavigationContainer independent={true}>
