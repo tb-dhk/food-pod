@@ -83,13 +83,14 @@ class HX711:
         self.lastVal = int(''.join(map(str, bits)), 2)
         return self.lastVal
 
-    def read_average(self, times=3):
+    def read_average(self, times=3, read=False):
         sum = 0
         measurements = []
         for i in range(times):
             new = self.read()
             measurements.append(new)
-        log_message(f"taring scale: {measurements}")
+        if read:
+            log_message(f"taring scale: {measurements}")
         return sum / times
 
     def get_value(self, times=3):
@@ -99,7 +100,7 @@ class HX711:
         return self.get_value(times) / self.SCALE
 
     def tare(self, times=15):
-        sum = self.read_average(times)
+        sum = self.read_average(times, read=True)
         self.set_offset(sum)
 
     def set_scale(self, scale):
