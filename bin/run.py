@@ -88,8 +88,8 @@ class HX711:
         measurements = []
         for i in range(times):
             new = self.read()
-            times.append(new)
-        log_message(f"taring scale:", measurements)
+            measurements.append(new)
+        log_message(f"taring scale: {measurements}")
         return sum / times
 
     def get_value(self, times=3):
