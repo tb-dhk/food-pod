@@ -90,7 +90,7 @@ class HX711:
             new = self.read()
             measurements.append(new)
             total += new
-        log_message(f"reading done: {measurements} ({sum(measurements) / times})")
+        log_message(f"reading done: {measurements} ({total / times})")
         return total / times
 
     def get_units(self, times=3):
