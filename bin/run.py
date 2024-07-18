@@ -84,14 +84,14 @@ class HX711:
         return self.lastVal
 
     def read_average(self, times=3):
-        sum = 0
+        total = 0
         measurements = []
         for i in range(times):
             new = self.read()
             measurements.append(new)
-            sum += new
+            total += new
         log_message(f"reading done: {measurements} ({sum(measurements) / times})")
-        return sum / times
+        return total / times
 
     def get_value(self, times=3):
         return self.read_average(times) - self.OFFSET
