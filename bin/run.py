@@ -85,8 +85,11 @@ class HX711:
 
     def read_average(self, times=3):
         sum = 0
+        measurements = []
         for i in range(times):
-            sum += self.read()
+            new = self.read()
+            times.append(new)
+        log_message(f"taring scale:", measurements)
         return sum / times
 
     def get_value(self, times=3):
