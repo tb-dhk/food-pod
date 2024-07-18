@@ -90,6 +90,7 @@ class HX711:
             new = self.read()
             measurements.append(new)
             sum += new
+        log_message(f"reading done: {measurements}")
         return sum / times
 
     def get_value(self, times=3):
