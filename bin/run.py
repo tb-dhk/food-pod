@@ -270,7 +270,7 @@ def monitor_weight():
 
             prev_weight = current_weight
 
-        time.sleep(0.25)
+        time.sleep(0)
         
 zero_scale() 
 log_message("Starting weight monitoring...")
