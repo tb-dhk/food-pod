@@ -91,10 +91,7 @@ class HX711:
             measurements.append(new)
             total += new
         log_message(f"reading done: {measurements} ({total / times})")
-        return total / times
-
-    def get_units(self, times=3):
-        return self.read_average(times) / self.SCALE
+        return total / times / self.SCALE
 
     def tare(self, times=15):
         sum = self.read_average(times)
@@ -130,7 +127,7 @@ def zero_scale():
 
 def get_weight():
     try:
-        weight = hx.get_units(5)
+        weight = hx.read_average(5)
         return weight
     except (KeyboardInterrupt, SystemExit):
         clean_and_exit()
@@ -270,7 +267,7 @@ def monitor_weight():
                 """, (time_now, 0, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change))
                 cnxn.commit()
 
-            prev_weight = current_weight
+        prev_weight = current_weight
 
         time.sleep(0)
         
