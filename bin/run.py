@@ -38,7 +38,7 @@ def zero_scale():
     log_message("Taring scale...")
     hx.tare()  # Tare the HX711
     log_message("Tare done!")
-    log_message(f"weight set to {hx.OFFSET}")
+    log_message(f"offset set to {hx.OFFSET}.")
 
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
