@@ -93,7 +93,7 @@ def monitor_weight():
     while True:
         current_weight = hx.get_weight()
         weight_change = current_weight - prev_weight
-        log_message(f"Waiting for weight change (now {prev_weight}) (change {weight_change})...")
+        log_message(f"Waiting for weight change (now {current_weight}) (change {weight_change})...")
         
         if abs(weight_change) > 10000:
             take_picture()
