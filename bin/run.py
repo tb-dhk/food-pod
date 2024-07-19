@@ -90,7 +90,7 @@ def monitor_weight():
     weight_buffer = []
     buffer_size = 10
     anti_spike_threshold = 0.9
-    significant_change_threshold = 10000
+    significant_change_threshold = 100000
 
     prev_weight = hx.get_weight()
     weight_buffer.append(prev_weight)
