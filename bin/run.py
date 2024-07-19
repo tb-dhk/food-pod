@@ -95,7 +95,7 @@ def monitor_weight():
         weight_change = current_weight - prev_weight
         log_message(f"Waiting for weight change (now {prev_weight}) (change {weight_change})...")
         
-        if abs(weight_change) > 1000:
+        if abs(weight_change) > 10000:
             take_picture()
             pics = get_latest_pictures("images")
             if len(pics) >= 2:
@@ -114,7 +114,7 @@ def monitor_weight():
                 results = detect_food(diff_filename)
             elif len(pics) == 1:
                 log_message("Less than two pictures available, detecting food from new picture...")
-                results = detect_food(cv2.imread(pics[0]))
+                results = detect_food(pics[0])
             else:
                 log_message("no images in directory. taking first picture...")
 
