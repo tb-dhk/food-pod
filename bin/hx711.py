@@ -20,7 +20,7 @@ class HX711:
         self.GAIN = 0
 
         # The value returned by the hx711 that corresponds to your reference
-        # unit AFTER dividing by the SCALE.
+        # unit AFTER dividing by the SCALE
         self.REFERENCE_UNIT = 1
         self.REFERENCE_UNIT_B = 1
 

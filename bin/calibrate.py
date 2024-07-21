@@ -2,6 +2,10 @@ import time
 import sys
 import RPi.GPIO as GPIO
 from hx711 import HX711
+from dotenv import load_dotenv, set_key, dotenv_values
+
+# Load environment variables from .env file
+load_dotenv(".env")
 
 # Initialize GPIO
 GPIO.setmode(GPIO.BCM)
@@ -42,14 +46,10 @@ def calibrate_scale():
     calibration_factor = reading / known_weight
     print(f"Calibration factor: {calibration_factor}")
 
-    hx.set_scale(calibration_factor)
-    print("Calibration factor set.")
-
-    # Save the calibration factor to a file
-    with open("calibration_factor.txt", "w") as f:
-        f.write(str(calibration_factor))
+    # Save the calibration factor to the .env file
+    set_key(".env", "CALIBRATION_FACTOR", str(calibration_factor))
     
-    print("Calibration factor saved to 'calibration_factor.txt'.")
+    print("Calibration factor saved to '.env'.")
     print("Calibration completed.")
 
 zero_scale()
@@ -59,3 +59,4 @@ try:
     calibrate_scale()
 except (KeyboardInterrupt, SystemExit):
     clean_and_exit()
+

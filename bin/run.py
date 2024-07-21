@@ -95,13 +95,17 @@ def monitor_weight():
     weight_buffer.append(prev_weight)
     time.sleep(1)
 
+    calibration_factor = float(os.getenv("CALIBRATION_FACTOR"))
+
     while True:
         current_weight = hx.get_weight()
         weight_buffer.append(current_weight)
 
         average_weight = sum(weight_buffer) / len(weight_buffer)
-        weight_change = average_weight - prev_weight
-        log_message(f"Waiting for weight change (average now {average_weight}) (change {weight_change})...")
+        calibrated_average_weight = average_weight / calibration_factor
+        calibrated_prev_weight = prev_weight / calibration_factor
+        weight_change = calibrated_average_weight - calibrated_prev_weight
+        log_message(f"Waiting for weight change (calibrated average now {calibrated_average_weight}) (calibrated change {weight_change})...")
 
         if abs(weight_change) > significant_change_threshold:
             log_message("Significant weight change detected.")
@@ -187,4 +191,3 @@ try:
     monitor_weight()
 except (KeyboardInterrupt, SystemExit):
     clean_and_exit()
-
