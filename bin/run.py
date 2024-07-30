@@ -26,6 +26,8 @@ def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
     print(f"[{log_time}] {message.lower()}")
 
+log_message("bin started.")
+
 def sql_log_message(cnxn, message):
     cursor = cnxn.cursor()
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
