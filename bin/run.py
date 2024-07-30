@@ -11,16 +11,9 @@ from ultralytics import YOLO
 import pyodbc
 import dotenv
 from collections import deque
+import threading
 
 dotenv.load_dotenv(".env")
-
-# Initialize GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-
-# Define the GPIO pins for the HX711
-DT_PIN = 5
-SCK_PIN = 6
 
 def log_message(message):
     log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -37,15 +30,33 @@ def sql_log_message(cnxn, message):
     """, (time_now, 0, str({'log': message})))
     cnxn.commit()
 
-# Initialize the HX711
-hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN, gain=128)
+def initialize_gpio_with_timeout(timeout=10):
+    def init_gpio():
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        global hx
+        hx = HX711(dout=DT_PIN, pd_sck=SCK_PIN, gain=128)
 
-def clean_and_exit(cnxn):
+    gpio_thread = threading.Thread(target=init_gpio)
+    gpio_thread.start()
+    gpio_thread.join(timeout)
+
+    if gpio_thread.is_alive():
+        log_message("GPIO initialization timeout.")
+        sql_log_message(cnxn, "GPIO initialization timeout.")
+        clean_and_exit()
+
+DT_PIN = 5
+SCK_PIN = 6
+
+def clean_and_exit(cnxn=None):
     log_message("Cleaning...")
-    sql_log_message(cnxn, "Cleaning...")
+    if cnxn:
+        sql_log_message(cnxn, "Cleaning...")
     GPIO.cleanup()
     log_message("Bye!")
-    sql_log_message(cnxn, "Bye!")
+    if cnxn:
+        sql_log_message(cnxn, "Bye!")
     sys.exit()
 
 def zero_scale():
@@ -203,6 +214,7 @@ while True:
     try:
         cnxn = sql_login()
         sql_log_message(cnxn, "Starting weight monitoring...")
+        initialize_gpio_with_timeout()
         zero_scale()
         log_message("Starting weight monitoring...")
         sql_log_message(cnxn, "Weight monitoring started.")
