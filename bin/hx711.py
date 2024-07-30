@@ -217,7 +217,7 @@ class HX711:
           # If times is even we have to take the arithmetic mean of
           # the two middle values.
           midpoint = len(valueList) / 2
-          return sum(valueList[midpoint:midpoint+2]) / 2.0
+          return sum(valueList[int(midpoint):int(midpoint)+2]) / 2.0
 
 
     # Compatibility function, uses channel A version
