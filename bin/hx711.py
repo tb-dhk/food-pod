@@ -238,7 +238,7 @@ class HX711:
         return value
 
     # Compatibility function, uses channel A version
-    def get_weight(self, times=100):
+    def get_weight(self, times=24):
         return self.get_weight_A(times)
 
 
