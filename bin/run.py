@@ -89,7 +89,7 @@ def convert_results_to_area_dict(boxes):
 
 def monitor_weight():
     weight_buffer = deque(maxlen=5)
-    significant_change_threshold = 1000
+    significant_change_threshold = 1
 
     prev_weight = hx.get_weight()
     weight_buffer.append(prev_weight)
