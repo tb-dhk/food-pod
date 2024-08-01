@@ -27,7 +27,7 @@ def sql_log_message(cnxn, message):
     cursor.execute("""
         INSERT INTO BinStatus (bin_id, status, timestamp)
         VALUES (?, ?, ?)
-    """, (0, message, time_now))
+    """, (0, message.lower(), time_now))
     cnxn.commit()
 
 def initialize_gpio_with_timeout(timeout=10):
@@ -213,7 +213,7 @@ def sql_login():
 while True:
     try:
         cnxn = sql_login()
-        sql_log_message(cnxn, "Starting weight monitoring...")
+        sql_log_message(cnxn, "code succesfully started.")
         initialize_gpio_with_timeout()
         zero_scale()
         log_message("Starting weight monitoring...")
