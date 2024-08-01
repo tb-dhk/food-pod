@@ -23,7 +23,7 @@ log_message("startup commenced.")
 
 def sql_log_message(cnxn, message):
     cursor = cnxn.cursor()
-    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
     cursor.execute("""
         INSERT INTO BinStatus (bin_id, status, timestamp)
         VALUES (?, ?, ?)
@@ -67,7 +67,7 @@ def zero_scale():
 
 def take_picture():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"images/{timestamp}.jpg"
+    filename = os.path.join(os.getcwd(), "images", f"{timestamp}.jpg")
     command = ["libcamera-still", "-o", filename, "--vflip", "-n"]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     log_message(f"Picture taken and saved as {filename}")
