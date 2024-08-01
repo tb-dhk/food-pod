@@ -25,9 +25,9 @@ def sql_log_message(cnxn, message):
     cursor = cnxn.cursor()
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute("""
-        INSERT INTO BinStatus (time, bin_id, dictionary_of_estimated_amts_of_food)
+        INSERT INTO BinStatus (id, bin_id, status, timestamp)
         VALUES (?, ?, ?)
-    """, (time_now, 0, str({'log': message})))
+    """, (0, str({'log': message})), time_now)
     cnxn.commit()
 
 def initialize_gpio_with_timeout(timeout=10):
