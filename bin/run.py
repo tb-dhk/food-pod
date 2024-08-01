@@ -24,11 +24,20 @@ log_message("startup commenced.")
 def sql_log_message(cnxn, message):
     cursor = cnxn.cursor()
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    
+    # Insert into the database
     cursor.execute("""
         INSERT INTO BinStatus (bin_id, status, timestamp)
         VALUES (?, ?, ?)
     """, (0, message.lower(), time_now))
     cnxn.commit()
+    
+    # Log to the file
+    log_message = f"{time_now} - {message.lower()}\n"
+    log_file_path = "/home/pi/startup.log"
+    
+    with open(log_file_path, 'a') as log_file:
+        log_file.write(log_message)
 
 def initialize_gpio_with_timeout(timeout=10):
     def init_gpio():
