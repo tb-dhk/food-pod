@@ -55,7 +55,6 @@ def clean_and_exit(cnxn=None):
     log_message("Cleaning...")
     if cnxn:
         sql_log_message(cnxn, "Cleaning...")
-    GPIO.cleanup()
     log_message("Bye!")
     if cnxn:
         sql_log_message(cnxn, "Bye!")
