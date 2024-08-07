@@ -200,7 +200,7 @@ def monitor_weight(cnxn):
                 cnxn.commit()
 
         prev_weight = average_weight
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 def sql_login():
     server = 'food-pod.database.windows.net'
