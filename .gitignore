@@ -4,6 +4,6 @@ api/.env
 app/.env
 .env
 
-app/node-modules/
-api/node-modules/
+app/node_modules/
+api/node_modules/
 
