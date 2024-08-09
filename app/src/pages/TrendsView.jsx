@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SHA256 } from 'crypto-js'; // Import crypto-js for hashing if needed
-import { LineChart } from "@mui/x-charts"
+import { LineChart } from '@mui/x-charts';
 import axios from 'axios'; // Import axios for making HTTP requests
+import chroma from 'chroma-js'; // Import chroma-js for color manipulation
 
 // Utility function to determine text color based on background color
 const getSpanColor = (hexCode) => {
@@ -10,12 +11,45 @@ const getSpanColor = (hexCode) => {
   const b = parseInt(hexCode.substr(5, 2), 16);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
   return brightness > 125 ? 'black' : 'white';
-}
+};
+
+// Utility function to blend colors, including black and white
+const blendColors = (colors, layer=0) => {
+  if (!colors.length) {
+    return "#800000"
+  }
+
+  let r = 0, g = 0, b = 0;
+
+  colors.forEach(color => {
+    const hex = color.replace('#', '');
+    r += parseInt(hex.substr(0, 2), 16);
+    g += parseInt(hex.substr(2, 2), 16);
+    b += parseInt(hex.substr(4, 2), 16);
+  });
+
+  r = Math.round(r / colors.length);
+  g = Math.round(g / colors.length);
+  b = Math.round(b / colors.length);
+
+  if (layer == 0) {
+    return blendColors([`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`, "#ffffff", "#ffffff"], layer=1);
+  } else {
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+  }
+};
+
+// Utility function to convert string to color using SHA256 hash and saturate
+const stringToColor = (str) => {
+  const hash = SHA256(str).toString();
+  const color = `#${hash.substring(0, 6)}`;
+  return chroma(color).saturate(1.5).darken(1.5).hex(); // Saturate the color
+};
 
 // Function to fetch data from an Azure SQL database
 async function fetchFromAzure(endpoint) {
   try {
-    const response = await axios.get(`https://food-pod.onrender.com/api/${endpoint}`);
+    const response = await axios.get(`https://localhost:5000/api/${endpoint}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching data from Azure:', error);
@@ -23,16 +57,12 @@ async function fetchFromAzure(endpoint) {
   }
 }
 
-// Define your component
 export default function Trendsdiv({ navigation }) {
   const [selectedFoods, setSelectedFoods] = useState([]);
-  const [startDate, setStartDate] = useState(''); // Initialize as an empty string
-  const [endDate, setEndDate] = useState('');     // Initialize as an empty string
   const [bins, setBins] = useState([]);
   const [logs, setLogs] = useState([]);
   const [food, setFood] = useState([]);
   const [blendedColor, setBlendedColor] = useState('#CCCCCC');
-  const [foodData, setFoodData] = useState([]);
 
   // Function to handle food item clicks
   const handleFoodClick = (food) => {
@@ -48,9 +78,11 @@ export default function Trendsdiv({ navigation }) {
     try {
       const logsData = await fetchFromAzure('logs');
       setLogs(logsData);
+      console.log("logs:", logsData);
 
       const foodData = await fetchFromAzure('food');
       setFood(foodData);
+      console.log("food:", foodData);
 
       const binData = await fetchFromAzure('bins');
       setBins(binData);
@@ -64,147 +96,121 @@ export default function Trendsdiv({ navigation }) {
     loadData();
   }, []);
 
-  const blendColors = (colors) => {
-    const rgbaColors = [...colors.map(hexToRgb), [255, 255, 255]];
-    const avgColor = rgbaColors.reduce((acc, color) => {
-      return [
-        acc[0] + color[0] / rgbaColors.length,
-        acc[1] + color[1] / rgbaColors.length,
-        acc[2] + color[2] / rgbaColors.length
-      ];
-    }, [0, 0, 0]);
-
-    return rgbToHex(avgColor);
-  };
-
+  // Effect to process data and update blendedColor
   useEffect(() => {
-    const colors = selectedFoods.map(food => "#" + SHA256(food).toString().substring(0, 6));
-    setBlendedColor(colors.length > 0 ? blendColors(colors) : '#CCCCCC');
-  }, [selectedFoods]);
-
-  const rgbToHex = (rgb) => {
-    const r = Math.round(rgb[0]);
-    const g = Math.round(rgb[1]);
-    const b = Math.round(rgb[2]);
-    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-  };
-
-  const hexToRgb = (hex) => {
-    const r = parseInt(hex.substr(1, 2), 16);
-    const g = parseInt(hex.substr(3, 2), 16);
-    const b = parseInt(hex.substr(5, 2), 16);
-    return [r, g, b];
-  };
-
-  const renderLineChart = () => {
-    let dataset = {};
-
-    if (selectedFoods.length > 0) {
-      dataset = selectedFoods.map(food => ({
-        data: foodData[food].map(d => ({ x: new Date(d.time).toLocaleDateString(), y: d.weight })),
-      }));
-
-      return (
-        <LineChart
-          xAxis={[{ dataKey: 'x' }]}
-          series={[]}
-          dataset={dataset.map((data, index) => ({
-            dataKey: 'y',
-            data: data.data,
-            color: () => `rgba(${hexToRgb("#" + SHA256(selectedFoods[index]).toString().substring(0, 6)).join(',')}, 1)`
-          }))}
-          width={window.innerWidth - 30}
-          height={250}
-          chartConfig={{
-            backgroundColor: blendedColor,
-            backgroundGradientFrom: blendedColor,
-            backgroundGradientTo: blendedColor,
-            decimalPlaces: 2,
-            color: () => getSpanColor(blendedColor),
-            style: {
-              borderRadius: 16
-            },
-            propsForLabels: {
-              fontFamily: "Comfortaa"
-            }
-          }}
-          style={{
-            padding: 10,
-            borderRadius: 16
-          }}
-        />
-      );
-    } else {
-      return (
-        <LineChart
-          xAxis={[{ dataKey: 'x' }]}
-          series={[]}
-          dataset={[{
-            dataKey: 'y',
-            data: []
-          }]}
-          width={window.innerWidth - 30}
-          height={250}
-          chartConfig={{
-            backgroundColor: '#CCCCCC',
-            backgroundGradientFrom: '#CCCCCC',
-            backgroundGradientTo: '#CCCCCC',
-            decimalPlaces: 2,
-            color: () => getSpanColor('#CCCCCC'),
-            style: {
-              borderRadius: 16
-            },
-            propsForLabels: {
-              fontFamily: "Comfortaa"
-            }
-          }}
-          style={{
-            padding: 10,
-            borderRadius: 16
-          }}
-        />
-      );
+    if (logs.length === 0 || food.length === 0 || selectedFoods.length === 0) {
+      return;
     }
+
+    setBlendedColor(blendColors(selectedFoods.map(foodId => stringToColor(food[foodId - 1].name))));
+  }, [logs, food, selectedFoods]);
+
+  // Render the LineChart
+  const processAndPrepareChartData = (logs, selectedFoods) => {
+    const foodDataMap = {};
+    
+    // Find the earliest date
+    const earliestDate = new Date(Math.min(...logs.map(log => new Date(log.timestamp))));
+    console.log("Earliest Date:", earliestDate.toLocaleDateString());
+
+    logs.forEach(log => {
+      console.log("Processing log:", log.timestamp, log.estimated_amts_of_food);
+
+      const foodEstimates = JSON.parse(log.estimated_amts_of_food);
+      const logDate = new Date(log.timestamp);
+      const daysSinceEarliest = Math.floor((logDate - earliestDate) / (1000 * 60 * 60 * 24));
+      console.log("Days since earliest:", daysSinceEarliest);
+
+      Object.keys(foodEstimates).forEach(foodId => {
+        const parsedFoodId = parseInt(foodId);
+        if (selectedFoods.includes(parsedFoodId)) {
+          if (!foodDataMap[parsedFoodId]) {
+            foodDataMap[parsedFoodId] = {};
+          }
+
+          const amount = foodEstimates[parsedFoodId];
+          if (foodDataMap[parsedFoodId][daysSinceEarliest]) {
+            foodDataMap[parsedFoodId][daysSinceEarliest] += amount;
+          } else {
+            foodDataMap[parsedFoodId][daysSinceEarliest] = amount;
+          }
+          console.log(`Updated foodDataMap[${parsedFoodId}]`, foodDataMap[parsedFoodId]);
+        }
+      });
+    });
+
+    console.log("Food Data Map:", foodDataMap);
+
+    // Prepare chart data
+    const xAxis = [{ data: [] }];
+    const series = [];
+
+    // Find the start and end days based on all food data
+    const allDays = [];
+    Object.values(foodDataMap).forEach(data => {
+      allDays.push(...Object.keys(data).map(day => parseInt(day)));
+    });
+    const minDay = Math.min(...allDays);
+    const maxDay = Math.max(...allDays);
+
+    // Ensure xAxis includes all days from minDay to maxDay
+    for (let i = minDay; i <= maxDay; i++) {
+      if (!xAxis[0].data.includes(i)) {
+        xAxis[0].data.push(i);
+        console.log(`Added ${i} to xAxis`);
+      }
+    }
+
+    // Iterate over each foodId in the foodDataMap
+    Object.entries(foodDataMap).forEach(([foodId, data]) => {
+      const foodSeries = [];
+      
+      console.log(`Processing data for foodId ${foodId}`);
+      console.log(`Days:`, xAxis[0].data);
+
+      // Initialize foodSeries with zeros for each day from minDay to maxDay
+      xAxis[0].data.forEach(day => {
+        foodSeries.push(data[day] !== undefined ? data[day] : 0);
+        console.log(`Day ${day}: Added ${data[day] !== undefined ? data[day] : 0} to foodSeries`);
+      });
+
+      console.log(`Series for foodId ${foodId}:`, foodSeries);
+
+      series.push({
+        data: foodSeries,
+        name: food[parseInt(foodId) - 1].name,
+        type: 'line',
+        smooth: true,
+        color: stringToColor(food[parseInt(foodId) - 1].name),
+      })
+    });
+
+    return { series, xAxis };
   };
+
+  const { series, xAxis } = processAndPrepareChartData(logs, selectedFoods);
 
   return (
-    <div style={styles.container}>
-      {renderLineChart()}
-      <div horizontal style={styles.buttonContainer}>
-        {Object.keys(foodData).map((item, index) => (
+    <div style={{ ...styles.container, backgroundColor: blendedColor }}>
+      <LineChart
+        width={window.innerWidth - 30}
+        height={250}
+        series={series}
+        xAxis={xAxis}
+        dataset={[{}]}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+      />
+      <div style={styles.buttonContainer}>
+        {Object.keys(food).map((item, index) => (
           <button
             key={index}
-            onPress={() => handleFoodClick(item)}
+            onClick={() => handleFoodClick(parseInt(item) + 1)}
             style={{
-              backgroundColor: selectedFoods.includes(item) ? "#" + SHA256(item).toString().substring(0, 6) : '#CCCCCC',
-              height: 50,
-              margin: 10,
-              padding: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 8
+              backgroundColor: selectedFoods.includes(parseInt(item) + 1) ? stringToColor(food[item].name) : '#ccc',
+              color: getSpanColor(selectedFoods.includes(parseInt(item) + 1) ? stringToColor(food[item].name) : '#ccc')
             }}
           >
-            <span style={{ color: getSpanColor(selectedFoods.includes(item) ? "#" + SHA256(item).toString().substring(0, 6) : '#CCCCCC') }}>{item}</span>
-          </button>
-        ))}
-      </div>
-      <div horizontal style={styles.buttonContainer}>
-        {bins.map((bin, index) => (
-          <button
-            key={index}
-            onPress={() => handleFoodClick(bin.name)}
-            style={{
-              backgroundColor: selectedFoods.includes(bin.name) ? "#" + SHA256(bin.name).toString().substring(0, 6) : '#CCCCCC',
-              height: 50,
-              margin: 10,
-              padding: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: 8
-            }}
-          >
-            <span style={{ color: getSpanColor(selectedFoods.includes(bin.name) ? "#" + SHA256(bin.name).toString().substring(0, 6) : '#CCCCCC') }}>{bin.name}</span>
+            {food[item]?.name || `Food ${item}`}
           </button>
         ))}
       </div>
@@ -212,16 +218,19 @@ export default function Trendsdiv({ navigation }) {
   );
 }
 
-const styles = ({
+// Styles for the container
+const styles = {
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: 'antiquewhite',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    padding: '20px',
   },
   buttonContainer: {
     flexDirection: 'row',
-    marginVertical: 20,
-  },
-});
+    marginTop: 20,
+  }
+};
 
