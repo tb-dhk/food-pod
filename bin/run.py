@@ -180,7 +180,7 @@ def monitor_weight(cnxn):
 
                 conversion_factor = total_weight / total_raw_weight if total_raw_weight else 0
 
-                adjusted_weights_dict = {cls: weight * conversion_factor for cls, weight in raw_weights_dict.items()}
+                adjusted_weights_dict = {cls: weight * conversion_factor * 1000 for cls, weight in raw_weights_dict.items()}
 
                 log_message(f"results: {results}")
                 log_message(f"weights: {adjusted_weights_dict}")
