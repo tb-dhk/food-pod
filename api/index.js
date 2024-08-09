@@ -1,4 +1,6 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const cors = require('cors');
 const { Binstatus, Bins, Food, Logs } = require('./models');
 
@@ -6,7 +8,7 @@ const app = express();
 
 // Apply CORS middleware
 app.use(cors({
-  origin: 'https://food-pod-03vk.onrender.com/' // Adjust according to your setup
+  origin: 'https://localhost:5173' // Adjust according to your setup
 }));
 
 app.use(express.json());
@@ -52,8 +54,11 @@ app.get('/api/logs', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const httpsOptions = {
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert')
+};
 
+https.createServer(httpsOptions, app).listen(5000, () => {
+  console.log('HTTPS Server running on port 5000');
+});
