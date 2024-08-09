@@ -13,6 +13,16 @@ app.use(cors({
 
 app.use(express.json());
 
+// sample endpoint
+app.get('/api/test', async (req, res) => {
+  try {
+    res.json({message: "yass!"});
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: err });
+  }
+})
+
 // Sample GET endpoint to fetch all binstatus
 app.get('/api/binstatus', async (req, res) => {
   try {
