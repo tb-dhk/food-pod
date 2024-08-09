@@ -1,2 +1,9 @@
 __pycache__/
 bin/.env
+api/.env
+app/.env
+.env
+
+app/node-modules/
+api/node-modules/
+
