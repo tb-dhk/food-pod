@@ -8,7 +8,7 @@ const app = express();
 
 // Apply CORS middleware
 app.use(cors({
-  origin: 'https://localhost:5173' // Adjust according to your setup
+  origin: 'https://food-pod-03vk.onrender.com/' // Adjust according to your setup
 }));
 
 app.use(express.json());
