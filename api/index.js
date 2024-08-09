@@ -10,7 +10,7 @@ app.get('/api/binstatus', async (req, res) => {
     const binstatus = await Binstatus.findAll();
     res.json(binstatus);
   } catch (err) {
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -20,7 +20,7 @@ app.get('/api/bins', async (req, res) => {
     const bins = await Bins.findAll();
     res.json(bins);
   } catch (err) {
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -30,7 +30,7 @@ app.get('/api/food', async (req, res) => {
     const foodItems = await Food.findAll();
     res.json(foodItems);
   } catch (err) {
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: err });
   }
 });
 
@@ -41,7 +41,7 @@ app.get('/api/logs', async (req, res) => {
     res.json(logs);
   } catch (err) {
     console.log(err)
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ error: err });
   }
 });
 
