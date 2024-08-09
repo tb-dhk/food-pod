@@ -1,5 +1,5 @@
 var path = require('path')
 
 module.exports = {
-  'config':          path.resolve('server', 'config', 'database.json'),
+  'config':          path.resolve('config', 'config.js'),
 }
