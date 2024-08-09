@@ -3,6 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
+  @Table({ timestamps: false })
   class Food extends Model {
     /**
      * Helper method for defining associations.
