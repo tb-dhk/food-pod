@@ -1,7 +1,14 @@
 const express = require('express');
-const { Binstatus, Bins, Food, Logs } = require('./models'); // Import all models
+const cors = require('cors');
+const { Binstatus, Bins, Food, Logs } = require('./models');
 
 const app = express();
+
+// Apply CORS middleware
+app.use(cors({
+  origin: 'https://food-pod-03vk.onrender.com/' // Adjust according to your setup
+}));
+
 app.use(express.json());
 
 // Sample GET endpoint to fetch all binstatus
@@ -44,7 +51,6 @@ app.get('/api/logs', async (req, res) => {
     res.status(500).json({ error: err });
   }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
