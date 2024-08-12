@@ -69,6 +69,6 @@ const httpsOptions = {
   cert: fs.readFileSync('server.cert')
 };
 
-https.createServer(httpsOptions, app).listen(5000, () => {
-  console.log('HTTPS Server running on port 5000');
+https.createServer(httpsOptions, app).listen(8080, () => {
+  console.log('HTTPS Server running on port 8080');
 });
