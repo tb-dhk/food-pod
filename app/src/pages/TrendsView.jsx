@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SHA256 } from 'crypto-js'; // Import crypto-js for hashing if needed
 import { LineChart } from '@mui/x-charts';
-import axios from 'axios'; // Import axios for making HTTP requests
+import fetchFromAzure from '../fetch.jsx'
 import chroma from 'chroma-js'; // Import chroma-js for color manipulation
 
 // Utility function to determine text color based on background color
@@ -14,9 +14,9 @@ const getSpanColor = (hexCode) => {
 };
 
 // Utility function to blend colors, including black and white
-const blendColors = (colors, layer=0) => {
+const blendColors = (colors, layer = 0) => {
   if (!colors.length) {
-    return "#800000"
+    return "#cccccc";
   }
 
   let r = 0, g = 0, b = 0;
@@ -32,10 +32,10 @@ const blendColors = (colors, layer=0) => {
   g = Math.round(g / colors.length);
   b = Math.round(b / colors.length);
 
-  if (layer == 0) {
-    return blendColors([`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`, "#ffffff", "#ffffff"], layer=1);
+  if (layer === 0) {
+    return blendColors([`#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`, "#ffffff", "#ffffff", "#ffffff"], layer = 1);
   } else {
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   }
 };
 
@@ -43,33 +43,32 @@ const blendColors = (colors, layer=0) => {
 const stringToColor = (str) => {
   const hash = SHA256(str).toString();
   const color = `#${hash.substring(0, 6)}`;
-  return chroma(color).saturate(1.5).darken(1.5).hex(); // Saturate the color
+  return chroma(color).saturate(1.5).darken(1.5).hex(); // Saturate and darken the color
 };
-
-// Function to fetch data from an Azure SQL database
-async function fetchFromAzure(endpoint) {
-  try {
-    const response = await axios.get(`https://food-pod.onrender.com/api/${endpoint}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching data from Azure:', error);
-    return [];
-  }
-}
 
 export default function Trendsdiv({ navigation }) {
   const [selectedFoods, setSelectedFoods] = useState([]);
+  const [selectedBins, setSelectedBins] = useState([]); // Added state for selected bins
   const [bins, setBins] = useState([]);
   const [logs, setLogs] = useState([]);
   const [food, setFood] = useState([]);
   const [blendedColor, setBlendedColor] = useState('#CCCCCC');
 
   // Function to handle food item clicks
-  const handleFoodClick = (food) => {
-    if (selectedFoods.includes(food)) {
-      setSelectedFoods(selectedFoods.filter(item => item !== food));
+  const handleFoodClick = (foodId) => {
+    if (selectedFoods.includes(foodId)) {
+      setSelectedFoods(selectedFoods.filter(item => item !== foodId));
     } else {
-      setSelectedFoods([...selectedFoods, food]);
+      setSelectedFoods([...selectedFoods, foodId]);
+    }
+  };
+
+  // Function to handle bin item clicks
+  const handleBinClick = (binId) => {
+    if (selectedBins.includes(binId)) {
+      setSelectedBins(selectedBins.filter(item => item !== binId));
+    } else {
+      setSelectedBins([...selectedBins, binId]);
     }
   };
 
@@ -98,15 +97,11 @@ export default function Trendsdiv({ navigation }) {
 
   // Effect to process data and update blendedColor
   useEffect(() => {
-    if (logs.length === 0 || food.length === 0 || selectedFoods.length === 0) {
-      return;
-    }
-
     setBlendedColor(blendColors(selectedFoods.map(foodId => stringToColor(food[foodId - 1].name))));
   }, [logs, food, selectedFoods]);
 
   // Render the LineChart
-  const processAndPrepareChartData = (logs, selectedFoods) => {
+  const processAndPrepareChartData = (logs, selectedFoods, selectedBins) => {
     const foodDataMap = {};
     
     // Find the earliest date
@@ -114,6 +109,10 @@ export default function Trendsdiv({ navigation }) {
     console.log("Earliest Date:", earliestDate.toLocaleDateString());
 
     logs.forEach(log => {
+      if (selectedBins.length && !selectedBins.includes(log.bin_id)) {
+        return;
+      }
+
       console.log("Processing log:", log.timestamp, log.estimated_amts_of_food);
 
       const foodEstimates = JSON.parse(log.estimated_amts_of_food);
@@ -123,7 +122,7 @@ export default function Trendsdiv({ navigation }) {
 
       Object.keys(foodEstimates).forEach(foodId => {
         const parsedFoodId = parseInt(foodId);
-        if (selectedFoods.includes(parsedFoodId)) {
+        if (selectedFoods.includes(parsedFoodId) && selectedBins.includes(parseInt(log.bin_id))) {
           if (!foodDataMap[parsedFoodId]) {
             foodDataMap[parsedFoodId] = {};
           }
@@ -182,55 +181,118 @@ export default function Trendsdiv({ navigation }) {
         type: 'line',
         smooth: true,
         color: stringToColor(food[parseInt(foodId) - 1].name),
-      })
+      });
     });
 
-    return { series, xAxis };
+    return { series, xAxis, foodDataMap, earliestDate };
   };
 
-  const { series, xAxis } = processAndPrepareChartData(logs, selectedFoods);
+  const { series, xAxis, foodDataMap, earliestDate } = processAndPrepareChartData(logs, selectedFoods, selectedBins);
+
+  // Create the table data from the foodDataMap
+  const tableData = Object.entries(foodDataMap).map(([foodId, data]) => {
+    return {
+      foodName: food[parseInt(foodId) - 1].name,
+      ...xAxis[0].data.reduce((acc, day) => {
+        acc[`Day ${day}`] = data[day] !== undefined ? data[day] : 0;
+        return acc;
+      }, {})
+    };
+  });
 
   return (
-    <div style={{ ...styles.container, backgroundColor: blendedColor }}>
-      <LineChart
-        width={window.innerWidth - 30}
-        height={250}
-        series={series}
-        xAxis={xAxis}
-        dataset={[{}]}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      />
-      <div style={styles.buttonContainer}>
-        {Object.keys(food).map((item, index) => (
-          <button
-            key={index}
-            onClick={() => handleFoodClick(parseInt(item) + 1)}
-            style={{
-              backgroundColor: selectedFoods.includes(parseInt(item) + 1) ? stringToColor(food[item].name) : '#ccc',
-              color: getSpanColor(selectedFoods.includes(parseInt(item) + 1) ? stringToColor(food[item].name) : '#ccc')
-            }}
-          >
-            {food[item]?.name || `Food ${item}`}
-          </button>
-        ))}
+    <div style={{...styles.container, backgroundColor: blendedColor}}>
+      <div>
+        <h3>graph</h3>
+        <LineChart
+          series={series}
+          xAxis={xAxis}
+          height={400}
+          width={600}
+          title="food waste over time"
+          noDataOverlay="no data to display"
+        />
+      </div>
+      <div>
+        <h3>data table</h3>
+        {tableData.length > 0 ? (
+          <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th>Food Name</th>
+                {xAxis[0].data.map(day => (
+                  <th key={day}>Day {day}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((row, index) => (
+                <tr key={index}>
+                  <td>{row.foodName}</td>
+                  {xAxis[0].data.map(day => (
+                    <td key={day}>{row[`Day ${day}`]}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>no data to display</p>
+        )}
+      </div>
+      <div>
+        <h3>options:</h3>
+        <div>
+          <h4>foods</h4>
+          {food.map(item => (
+            <button
+              key={item.id}
+              style={{
+                backgroundColor: selectedFoods.includes(item.id) ? stringToColor(item.name) : '#CCCCCC',
+                color: getSpanColor(selectedFoods.includes(item.id) ? stringToColor(item.name) : '#CCCCCC'),
+                margin: '5px',
+                padding: '10px',
+                border: 'none',
+                cursor: 'pointer',
+                borderRadius: '12px',
+              }}
+              onClick={() => handleFoodClick(item.id)}
+            >
+              {item.name}
+            </button>
+          ))}
+        </div>
+        <div>
+          <h4>bins</h4>
+          {bins.map(bin => (
+            <button
+              key={bin.id}
+              style={{
+                backgroundColor: selectedBins.includes(bin.id) ? stringToColor(bin.name) : '#CCCCCC',
+                color: getSpanColor(selectedBins.includes(bin.id) ? stringToColor(bin.name) : '#CCCCCC'),
+                margin: '5px',
+                padding: '10px',
+                border: 'none',
+                cursor: 'pointer',
+                borderRadius: '12px',
+              }}
+              onClick={() => handleBinClick(bin.id)}
+            >
+              {bin.name}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-// Styles for the container
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     padding: '20px',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
-  }
 };
 
