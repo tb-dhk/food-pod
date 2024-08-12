@@ -29,7 +29,7 @@ def sql_log_message(cnxn, message):
     cursor.execute("""
         INSERT INTO BinStatus (bin_id, status, timestamp)
         VALUES (?, ?, ?)
-    """, (0, message.lower(), time_now))
+    """, (1, message.lower(), time_now))
     cnxn.commit()
 
 def initialize_gpio_with_timeout(timeout=10):
@@ -196,7 +196,7 @@ def monitor_weight(cnxn):
                 cursor.execute("""
                     INSERT INTO Logs (time, bin_id, raw_picture, filtered_picture, estimated_amts_of_food, change_in_weight)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (time_now, 0, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change * 1000))
+                """, (time_now, 1, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change * 1000))
                 cnxn.commit()
 
         prev_weight = average_weight
