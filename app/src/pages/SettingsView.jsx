@@ -1,18 +1,9 @@
 import React from 'react'
 
-export default function Settingsdiv({ navigation }) {
+export default function Settingsdiv({ props }) {
   return (
-    <div style={styles.container}>
+    <div className="container">
       <span>Settings</span>
     </div>
   );
 }
-
-const styles =({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'antiquewhite',
-  },
-});

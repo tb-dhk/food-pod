@@ -53,65 +53,20 @@ export default function LiveView() {
   }, []);
 
   // Filter logs based on selected bins
-  const filteredlogs = logs.filter(picture => selectedBins.includes(picture.bin_id));
+  const filteredLogs = logs.filter(log => selectedBins.includes(log.bin_id));
 
   return (
-    <div style={styles.container}>
-      <div>
-        <h3>pictures</h3>
-        <button 
-          style={styles.toggleButton} 
-          onClick={() => setShowFiltered(!showFiltered)}
-        >
-          Toggle {showFiltered ? 'Filtered' : 'Raw'} logs
-        </button>
-        <div>
-          {selectedBins.length === 0 ? (
-            <p>Select bins to display logs</p>
-          ) : showFiltered ? (
-            filteredlogs.map((picture, index) => (
-              picture.filtered_picture ? (
-                <div key={index} style={styles.pictureContainer}>
-                  <p style={styles.timestamp}>{new Date(picture.timestamp).toLocaleString()}</p>
-                  <img 
-                    src={picture.filtered_picture} 
-                    alt={`Filtered Picture ${index + 1}`} 
-                    style={styles.image}
-                  />
-                </div>
-              ) : null
-            ))
-          ) : (
-            filteredlogs.map((picture, index) => (
-              picture.raw_picture ? (
-                <div key={index} style={styles.pictureContainer}>
-                  <p style={styles.timestamp}>{new Date(picture.timestamp).toLocaleString()}</p>
-                  <img 
-                    src={picture.raw_picture} 
-                    alt={`Raw Picture ${index + 1}`} 
-                    style={styles.image}
-                  />
-                </div>
-              ) : null
-            ))
-          )}
-        </div>
-      </div>
-      <div>
-        <h3>Options:</h3>
-        <div>
-          <h4>Bins</h4>
+    <div className="container">
+      <div className="two-column-layout">
+        <div className="option-buttons">
+          <h3>Bins</h3>
           {bins.map(bin => (
             <button
               key={bin.id}
+              className="option-button"
               style={{
                 backgroundColor: selectedBins.includes(bin.id) ? stringToColor(bin.name) : '#CCCCCC',
                 color: getSpanColor(selectedBins.includes(bin.id) ? stringToColor(bin.name) : '#CCCCCC'),
-                margin: '5px',
-                padding: '10px',
-                border: 'none',
-                cursor: 'pointer',
-                borderRadius: '12px',
               }}
               onClick={() => handleBinClick(bin.id)}
             >
@@ -119,39 +74,46 @@ export default function LiveView() {
             </button>
           ))}
         </div>
+        <div className="content">
+          <h3>Pictures</h3>
+          <button 
+            className="toggle-button" 
+            onClick={() => setShowFiltered(!showFiltered)}
+          >
+            toggle {showFiltered ? 'filtered' : 'raw'} logs
+          </button>
+          <div class={`logs-container ${selectedBins.length ? "grid" : ""}`}>
+            {selectedBins.length === 0 ? (
+              <p>Select bins to display logs.</p>
+            ) : showFiltered ? (
+              filteredLogs.map((log, index) => (
+                log.filtered_picture ? (
+                  <div key={index} className="picture-container">
+                    <p className="timestamp">{new Date(log.timestamp).toLocaleString()}</p>
+                    <img 
+                      src={log.filtered_picture} 
+                      alt={`Filtered Picture ${index + 1}`}
+                    />
+                  </div>
+                ) : null
+              ))
+            ) : (
+              filteredLogs.map((log, index) => (
+                log.raw_picture ? (
+                  <div key={index} className="picture-container">
+                    <p className="timestamp">{new Date(log.timestamp).toLocaleString()}</p>
+                    <img 
+                      src={log.raw_picture} 
+                      alt={`Raw Picture ${index + 1}`} 
+                    />
+                  </div>
+                ) : null
+              ))
+            )}
+          </div>    
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px',
-  },
-  toggleButton: {
-    margin: '10px',
-    padding: '10px',
-    border: 'none',
-    cursor: 'pointer',
-    borderRadius: '12px',
-    backgroundColor: '#CCCCCC',
-  },
-  pictureContainer: {
-    margin: '10px',
-    textAlign: 'center',
-  },
-  timestamp: {
-    marginBottom: '5px',
-    fontSize: '14px',
-    color: '#555555',
-  },
-  image: {
-    maxWidth: '100%',
-    maxHeight: '400px',
-    borderRadius: '8px',
-  },
-};
 

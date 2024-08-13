@@ -1,38 +1,30 @@
-import React from 'react'
+import React from 'react';
 
-export default function Creditsdiv({ navigation }) {
+export default function Creditsdiv({ props }) {
   return (
-    <div style={styles.container}>
-      <span style={styles.title}>credits:</span>
-      <span style={styles.text}>
-        made by:{"\n"}
-        - wang xinjie{"\n"}
-        - johann young{"\n"}
-        - keegan cheng{"\n"}
-        - joshua soh{"\n"}
-        - chen yixu{"\n\n"}
-        special thanks to:{"\n"}
-        - sembcorp industries{"\n"}
-        - mr tiong heng liong{"\n"}
-        - mr firdaus hamzah
-      </span>
+    <div className="credits-container">
+      <h1 className="credits-title">Credits</h1>
+      <div className="credits-content">
+        <section className="credits-section">
+          <h2 className="section-heading">Made By:</h2>
+          <ul className="credits-list">
+            <li>Wang Xinjie</li>
+            <li>Johann Young</li>
+            <li>Keegan Cheng</li>
+            <li>Joshua Soh</li>
+            <li>Chen Yixu</li>
+          </ul>
+        </section>
+        <section className="credits-section">
+          <h2 className="section-heading">Special Thanks To:</h2>
+          <ul className="credits-list">
+            <li>Sembcorp Industries</li>
+            <li>Mr. Tiong Heng Liong</li>
+            <li>Mr. Firdaus Hamzah</li>
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }
 
-const styles =({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'antiquewhite',
-  },
-  title: {
-    fontSize: 25,
-    marginBottom: 20,
-  },
-  text: {
-    fontSize: 20,
-    textAlign: 'center',
-  },
-});

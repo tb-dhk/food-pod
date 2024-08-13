@@ -194,7 +194,7 @@ def monitor_weight(cnxn):
                 time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
                 cursor.execute("""
-                    INSERT INTO Logs (time, bin_id, raw_picture, filtered_picture, estimated_amts_of_food, change_in_weight)
+                    INSERT INTO Logs (timestamp, bin_id, raw_picture, filtered_picture, estimated_amts_of_food, change_in_weight)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """, (time_now, 1, pyodbc.Binary(pic_bin), pyodbc.Binary(pic_new), str(adjusted_weights_dict), weight_change * 1000))
                 cnxn.commit()

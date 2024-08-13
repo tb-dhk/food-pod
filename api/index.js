@@ -8,20 +8,8 @@ const app = express();
 
 // Apply CORS middleware
 app.use(cors({
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      'https://food-pod-03vk.onrender.com',
-      'http://localhost:5173'
-    ];
-
-    if (allowedOrigins.includes(origin) || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
+  origin: 'https://localhost:5173' // Adjust according to your setup
 }));
-
 
 app.use(express.json());
 

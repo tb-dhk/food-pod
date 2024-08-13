@@ -1,43 +1,9 @@
-.App {
-  text-align: center;
+/* General App Styling */
+
+* {
+  font-family: Comfortaa, Helvetica, Arial, sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* App.css */
 .header {
   background-color: #ffffff;
   display: flex;
@@ -51,20 +17,194 @@
   object-fit: contain;
 }
 
-nav {
-  text-align: center;
-  margin: 20px 0;
-}
-
-nav button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
+img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
 }
 
 main {
+  width: 50vw;
+  position: absolute; /* Position absolutely relative to the nearest positioned ancestor */
+  left: 50%; /* Position from the left of the viewport */
+  transform: translate(-50%, 0); /* Center the element by offsetting its own width and height */
   text-align: center;
   padding: 20px;
+  background-color: white;
+}
+
+/* Navigation Styling */
+nav {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+.nav-button {
+  background-color: #dddddd; /* Default background color */
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  font-size: 16px;
+}
+
+.nav-button:hover {
+  background-color: #cccccc; /* Slightly darker grey on hover */
+}
+
+.nav-button.active {
+  background-color: #0dced9; /* Brand color */
+  color: white;
+}
+
+/* Container Styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+  padding: 50px; /* Padding for spacing */
+  background-color: #ffffff; /* Light background color */
+  text-align: center; /* Center text within container */
+  width: 80vw; /* Set width to a percentage of viewport width */
+  max-width: 1200px; /* Optional: set a maximum width */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  margin: 0 auto; /* Center the container horizontally if it’s not 100vw */
+  height: 80vh; /* Set height to full viewport height */
+}
+
+.two-column-layout {
+  display: flex;
+  width: 100%;
+}
+
+.option-buttons {
+  flex: 1;
+  padding: 50px;
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center buttons vertically */
+}
+
+.option-buttons > * > button {
+  width: 100%
+}
+
+.bin-button {
+  display: block;
+  color: inherit;
+  background-color: inherit;
+  padding: 50px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid; /* Border using brand color */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.content {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically if needed */
+  flex-direction: column; /* Stack children vertically */
+  width: 80%; /* Width of the content */
+  max-width: 1200px; /* Optional: maximum width */
+  margin: 0 auto; /* Center the content horizontally within the container */
+  padding: 50px; /* Padding around the content */
+  box-sizing: border-box; /* Include padding in width calculation */
+  background-color: #ffffff; /* Background color */
+}
+
+.css-3btxp8-MuiResponsiveChart-container {
+  width: 100% !important
+}
+
+.toggle-button {
+  padding: 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0dced9; /* Brand color */
+  color: white;
+  font-size: 1em;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #007bff; /* Darker color for hover effect */
+}
+
+.picture-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  text-align: center;
+  max-width: 100%; /* Ensures container doesn't exceed viewport width */
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+}
+
+img {
+  max-width: 100%; /* Keeps the image within the container's width */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px;
+}
+
+/* Optional: Set a fixed width for the parent div if needed */
+.logs-container {
+  width: 80%; /* Width is 60% of its parent container */
+  margin: 0 auto; /* Center the container horizontally */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.picture-container > img {
+  width: 100%;
+}
+
+.timestamp {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #0dced9; /* Brand color for timestamps */
+}
+
+.option-button {
+  display: block;
+  color: inherit;
+  background-color: inherit;
+  padding: 10px 20px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid; /* Border using brand color */
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Table Styling */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+thead th {
+  border-bottom: 2px solid #ddd;
+  padding: 10px;
+  text-align: left;
 }
 
